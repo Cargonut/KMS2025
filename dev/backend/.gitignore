@@ -1,0 +1,74 @@
+# -----------------------------------
+# Node & Dependencies
+# -----------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+
+# -----------------------------------
+# Environment Files
+# -----------------------------------
+.env
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+# -----------------------------------
+# NestJS Build Output
+# -----------------------------------
+dist/
+*.tsbuildinfo
+
+# -----------------------------------
+# Prisma
+# -----------------------------------
+# Prisma Client (generiert)
+node_modules/@prisma/client/
+# lokale SQLite DB falls später genutzt wird
+prisma/dev.db
+# generierter Client Ordner falls moved
+.prisma/
+
+# -----------------------------------
+# Logs
+# -----------------------------------
+logs/
+*.log
+*.log.*
+npm-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# -----------------------------------
+# Docker & Volumes
+# -----------------------------------
+postgres_data/
+docker-data/
+*.pid
+
+# -----------------------------------
+# OS / Editor Files
+# -----------------------------------
+.DS_Store
+Thumbs.db
+.vscode/
+.vscode/*
+
+# JetBrains IDEs
+.idea/
+*.iml
+out/
+
+# -----------------------------------
+# Temporary / Cache
+# -----------------------------------
+.tmp/
+temp/
+cache/
+
+uploads/
+schema.gql

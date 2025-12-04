@@ -1,0 +1,33 @@
+services:
+  cargonaut_db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cargonaut
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+ # backend:
+  #  build: .
+   # container_name: cargonaut_backend
+   # depends_on:
+     # cargonaut_db:
+      #  condition: service_healthy
+   # env_file:
+     # - .env
+   # volumes:
+    #  - ./uploads:/app/uploads
+   # ports:
+    #  - "3000:3000"
+   # command: ["/bin/sh", "/app/docker-entrypoint.sh"]
+
+volumes:
+  postgres_data:

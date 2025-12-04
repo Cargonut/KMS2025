@@ -1,0 +1,125 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  email                         String                @unique
+  additional_note               String?
+  birth_date                    DateTime
+  created_at                    DateTime              @default(now())
+  first_name                    String
+  last_name                     String
+  phone                         String?
+  profile_image                 String?
+  id                            Int                   @id @default(autoincrement())
+  passwordHash                  String
+  trips                         Trip[]
+  passengers                    TripPassenger[]
+  ratings_given_as_driver       TripRatingDriver[]    @relation("DriverRatings")
+  ratings_received_as_passenger TripRatingDriver[]    @relation("PassengerRatingsForDriver")
+  ratings_received_as_driver    TripRatingPassenger[] @relation("DriverRatingsForPassenger")
+  ratings_given_as_passenger    TripRatingPassenger[] @relation("PassengerRatings")
+  vehicles                      Vehicle[]
+}
+
+model Vehicle {
+  id               Int     @id @default(autoincrement())
+  user_id          Int
+  name             String?
+  special_features String?
+  weight           Float?
+  dimensions       String?
+  trips            Trip[]
+  user             User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Trip {
+  id                Int                   @id @default(autoincrement())
+  user_id           Int
+  type              TripType
+  from_location     String
+  to_location       String
+  via               String?
+  start_date        DateTime
+  end_date          DateTime?
+  vehicle_id        Int?
+  weight            Float?
+  seats             Int?
+  price             Float?
+  is_active         Boolean               @default(true)
+  restrictions      String?
+  user              User                  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  vehicle           Vehicle?              @relation(fields: [vehicle_id], references: [id])
+  passengers        TripPassenger[]
+  ratings_driver    TripRatingDriver[]
+  ratings_passenger TripRatingPassenger[]
+  tracking          TripTracking[]
+}
+
+model TripRatingDriver {
+  id              Int      @id @default(autoincrement())
+  trip_id         Int
+  driver_id       Int
+  passenger_id    Int
+  punctuality     Int?
+  adherence       Int?
+  comfort         Int?
+  cargo_condition Int?
+  created_at      DateTime @default(now())
+  driver          User     @relation("DriverRatings", fields: [driver_id], references: [id])
+  passenger       User     @relation("PassengerRatingsForDriver", fields: [passenger_id], references: [id])
+  trip            Trip     @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+}
+
+model TripRatingPassenger {
+  id           Int      @id @default(autoincrement())
+  trip_id      Int
+  passenger_id Int
+  driver_id    Int
+  punctuality  Int?
+  adherence    Int?
+  friendliness Int?
+  created_at   DateTime @default(now())
+  driver       User     @relation("DriverRatingsForPassenger", fields: [driver_id], references: [id])
+  passenger    User     @relation("PassengerRatings", fields: [passenger_id], references: [id])
+  trip         Trip     @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+}
+
+model TripPassenger {
+  id           Int             @id @default(autoincrement())
+  trip_id      Int
+  passenger_id Int
+  joined_at    DateTime        @default(now())
+  status       PassengerStatus @default(zugesagt)
+  passenger    User            @relation(fields: [passenger_id], references: [id])
+  trip         Trip            @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+
+  @@unique([trip_id, passenger_id])
+}
+
+model TripTracking {
+  id         Int      @id @default(autoincrement())
+  trip_id    Int
+  latitude   Float?
+  longitude  Float?
+  status     String?
+  updated_at DateTime @default(now())
+  trip       Trip     @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+}
+
+enum TripType {
+  angebot
+  gesuch
+}
+
+enum PassengerStatus {
+  zugesagt
+  storniert
+  abgeschlossen
+}
