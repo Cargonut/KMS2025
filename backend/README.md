@@ -1,20 +1,19 @@
-🚀 MyCargonaut – Backend
-
-NestJS + GraphQL (Mercurius) + Prisma + PostgreSQL
+# 🚀 MyCargonaut – Backend  
+**NestJS + GraphQL (Mercurius) + Prisma + PostgreSQL**
 
 Dieses Backend stellt alle Kernfunktionen für die MyCargonaut-Plattform bereit:
 
-Nutzerverwaltung (Signup, Login, Profil, Passwort ändern)
+- Nutzerverwaltung (Signup, Login, Profil, Passwort ändern)
+- Authentifizierung via JWT  
+- Fahrten, Fahrzeuge, Bewertungen  
+- Datei-Uploads  
+- Prisma ORM und PostgreSQL  
 
-Authentifizierung via JWT
+---
 
-Fahrten, Fahrzeuge, Bewertungen
+## 📂 Projektstruktur
 
-Dateiupload für Profilbilder, Fahrzeuge und Trips
-
-Prisma ORM und PostgreSQL
-
-📂 Projektstruktur
+```bash
 backend/
 │
 ├── src/
@@ -29,36 +28,39 @@ backend/
 │   ├── schema.prisma   # Datenbankmodell
 │   └── migrations/     # Migrationen
 │
-├── uploads/            # Datei-Uploads (wird nicht committed)
+├── uploads/            # Datei-Uploads (nicht versioniert)
 │
-├── .env                # Lokale Umgebungsvariablen (nicht committen)
+├── .env                # Lokale Umgebungsvariablen
 └── .env.example        # Vorlage für alle Teammitglieder
+```
+---
 
 🛠 Voraussetzungen
 
-Installiert werden müssen:
+Folgendes muss installiert sein:
+ 
+- Node.js 20+
 
-Node.js 20+
+- npm, yarn oder pnpm
 
-npm oder yarn/pnpm
+- Docker (für die DB)
 
-Docker (für das PostgreSQL-DB Setup)
+- WSL2 (falls Windows)
 
-WSL2 (unter Windows empfohlen)
+---
 
-🔧 1. Projekt initial klonen
+🔧 1. Projekt klonen
+```bash
 git clone https://github.com/Cargonut/KMS2025.git
 cd KMS2025/backend
-
+```
+---
 🔐 2. .env Datei erstellen
-
-Kopiere die Vorlage:
-
+```bash
 cp .env.example .env
-
-
-Dann ersetzen oder eintragen:
-
+```
+Eintragen:
+```bash
 DATABASE_URL="postgresql://postgres:password@localhost:5432/cargonaut?schema=public"
 
 JWT_SECRET="DEIN_GEHEIMER_JWT_KEY"
@@ -70,47 +72,43 @@ UPLOADS_DIR="./uploads"
 PROFILE_UPLOAD_DIR="./uploads/profile"
 VEHICLE_UPLOAD_DIR="./uploads/vehicles"
 TRIP_UPLOAD_DIR="./uploads/trips"
-
-
-👉 Den JWT-Key erzeugst du so:
-
+```
+JWT Key erzeugen:
+```bash
 openssl rand -hex 32
-
-🐘 3. Datenbank starten (Docker)
-
-Im Backend-Ordner ausführen:
-
+```
+---
+🐘 3. Datenbank starten
+```bash
 docker compose up -d
-
-
-Dadurch startet:
-
-PostgreSQL DB (localhost:5432)
-
-🗄 4. Prisma Setup ausführen
-Prisma Client generieren
+```
+---
+🗄 4. Prisma Setup
+Client generieren:
+```bash
 npx prisma generate
-
-(Optional) DB Migrations anwenden
+```
+Migration anwenden:
+```bash
 npx prisma migrate deploy
-
+```
+---
 🚀 5. Backend starten
-Entwicklung (Hot Reload):
+Entwicklung
+```bash
 npm run start:dev
-
-Produktion:
+```
+Produktion
+```bash
 npm run build
 npm run start:prod
-
-🧪 6. GraphQL Playground
-
-Wenn das Backend läuft, öffne:
-
+```
+---
+🧪 6. GraphQL Playground öffnen
 👉 http://localhost:3000/graphiql
 
-Hier kannst du Queries testen, z. B.:
-
 Signup
+```bash
 mutation {
   signup(data: {
     first_name: "Max"
@@ -123,88 +121,76 @@ mutation {
     email
   }
 }
-
+```
 Login
+```bash
 mutation {
   login(email: "max@example.com", password: "123456")
 }
-
-
-Das Ergebnis ist ein JWT Token.
-
+```
 Authentifizierte Query
-
 Header:
-
+```bash
 {
-  "Authorization": "Bearer MEIN_JWT_TOKEN"
+  "Authorization": "Bearer TOKEN_HIER"
 }
-
-
-Query:
-
+```
+Query
+```bash
 query {
   me {
     id
     email
   }
 }
-
-📤 Uploads
-
-Uploads werden über Fastify bereitgestellt:
-
-/uploads/profile
-/uploads/vehicles
-/uploads/trips
-
-
-Die tatsächlichen Dateien liegen in:
-
+```
+---
+📤 Datei-Uploads
+Uploads liegen lokal in:
+```bash
 backend/uploads/
+```
+Bereitgestellt unter:
 
+- /uploads/profile
 
-Diese Ordner werden nicht committed (.gitignore).
+- /uploads/vehicles
 
-🔐 Auth Flow (Kurzfassung)
+- /uploads/trips
 
-Signup: Passwort wird gehasht und gespeichert
+---
+🔐 Auth Flow
+1. Signup → Passwort wird gehasht
 
-Login: Passwort wird geprüft → JWT wird erstellt
+2. Login → JWT wird generiert
 
-Authorization:
+3. Guard prüft Token
 
-Jede geschützte Query/Mutation nutzt @UseGuards(GqlAuthGuard)
+4. me liefert eingeloggten User
 
-Token wird geprüft via JWTStrategy
+5. updatePassword validiert altes PW
 
-me: Gibt den eingeloggten User zurück
-
-updatePassword: Validiert altes Passwort und schreibt ein neues Hash
+6. updateMe ändert Userdaten
+---
 
 🧰 Nützliche Commands
-Zweck	Command
-Prisma Studio öffnen	npx prisma studio
-DB neu generieren	npx prisma migrate dev
-Container stoppen	docker compose down
-Logausgabe Docker	docker logs backend-cargonaut_db-1
+| Zweck          | Command                              |
+| -------------- | ------------------------------------ |
+| Prisma Studio  | `npx prisma studio`                  |
+| Migration      | `npx prisma migrate dev`             |
+| Docker stoppen | `docker compose down`                |
+| DB Logs        | `docker logs backend-cargonaut_db-1` |
+
+---
 🧑‍🤝‍🧑 Team Workflow
+- Arbeiten im dev Branch
+- Backend liegt in /backend
+- Frontend in /frontend
+- Änderungen → Pull Request → Review → Merge
 
-Dev Branch verwenden
+---
 
-Änderungen in backend/ machen
-
-Pull Request → Code Review
-
-Merge in dev
-
-Deployment folgt später
-
-❤️ Support / Entwicklung
+❤️ Support
 
 Backend Lead: Can
 Technologien: NestJS · Prisma · GraphQL · PostgreSQL
-
-Bei Fragen einfach melden — oder ChatGPT fragen 😄
-
-🎉 Viel Erfolg beim Entwickeln!
