@@ -8,6 +8,8 @@ import { UpdatePasswordInput } from '../../core/user/dto/update-password.input';
 import { UpdateUserInput } from '../../core/user/dto/update-user.input';
 import { CreateUserInput } from '../../core/user/dto/create-user.input';
 import { User } from '../../core/user/entities/user.entity';
+import { UnauthorizedException } from '@nestjs/common';
+
 
 @Resolver(() => User)
 export class UserResolver {
@@ -42,6 +44,31 @@ export class UserResolver {
       // Mercurius MUSS explizit mit einem Error abbrechen
       throw new Error(err.message);
     }
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => Boolean)
+  async deleteMe(
+    @CurrentUser() user: any,
+    @Args('password') password: string,
+  ) {
+    const foundUser = await this.userService.findOne(user.id);
+
+    if (!foundUser) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const isValid = await this.auth.comparePasswords(
+      password,
+      foundUser.passwordHash,
+    );
+
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid password');
+    }
+
+    await this.userService.deleteUser(user.id);
+    return true;
   }
 
 

@@ -57,6 +57,13 @@ export class UserService {
   }
 
   // --------------------------------------------------------
+  // DELETE USER
+  // --------------------------------------------------------
+  async deleteUser(id: number) {
+    return this.prisma.user.delete({ where: { id } });
+  }
+
+  // --------------------------------------------------------
   // UPDATE PASSWORD
   // --------------------------------------------------------
   async updatePassword(id: number, oldPassword: string, newPassword: string) {
