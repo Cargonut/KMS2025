@@ -13,11 +13,8 @@ import { UploadModule } from './api/rest/upload.module';
 @Module({
   imports: [
     PrismaModule,
-
-    // Reihenfolge: User vor Auth ist korrekt
     UserModule,
     AuthModule,
-
     TripModule,
     VehicleModule,
     UploadModule,
@@ -31,48 +28,27 @@ import { UploadModule } from './api/rest/upload.module';
       buildSchemaOptions: { dateScalarMode: 'isoDate' },
 
       // ---------------------------------------------
-      // 🔥 CUSTOM ERROR FORMATTER (Mercurius)
+      // FINAL FUNCTIONING ERROR FORMATTER
       // ---------------------------------------------
-      errorFormatter: (executionResult: any, context) => {
-        const error = executionResult.errors?.[0];
-        const original = error?.originalError as any;
+      errorFormatter: (executionResult, context) => {
+        const { errors, data } = executionResult;
 
-        // Prisma Unique Constraint Error (P2002)
-        if (original?.code === 'P2002') {
-          const field = original.meta?.target?.[0] ?? 'field';
-          const message =
-            field === 'email'
-              ? 'Email already taken.'
-              : `Duplicate value for field: ${field}`;
+        const formattedErrors = errors.map(err => ({
+          message: err.message,
+          extensions: err.extensions || {},
+        }));
 
-          return {
-            statusCode: 400,
-            response: {
-              errors: [{ message }],
-            },
-          };
-        }
+        const statusCode = formattedErrors.length > 0 ? 400 : 200;
 
-        // Prisma Record Not Found (P2025)
-        if (original?.code === 'P2025') {
-          return {
-            statusCode: 404,
-            response: {
-              errors: [{ message: 'Record not found.' }],
-            },
-          };
-        }
-
-        // Default GraphQL/NestJS Error
         return {
-          statusCode: 500,
+          statusCode,
           response: {
-            errors: [{ message: error?.message ?? 'Internal Server Error' }],
+            data,
+            errors: formattedErrors,
           },
         };
       },
-
     }),
   ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,7 +1,8 @@
-import { Injectable, UnauthorizedException, Inject, forwardRef, } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../core/user/user.service';
+import { GraphQLError } from 'graphql';
 
 @Injectable()
 export class AuthService {
@@ -10,14 +11,30 @@ export class AuthService {
     private readonly userService: UserService,
 
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   async validateUser(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
+
+    if (!user) {
+      throw new GraphQLError('Invalid credentials', {
+        extensions: {
+          code: 'UNAUTHORIZED',
+          statusCode: 401,
+        },
+      });
+    }
 
     const isValid = await bcrypt.compare(password, user.passwordHash);
-    if (!isValid) throw new UnauthorizedException('Invalid credentials');
+
+    if (!isValid) {
+      throw new GraphQLError('Invalid credentials', {
+        extensions: {
+          code: 'UNAUTHORIZED',
+          statusCode: 401,
+        },
+      });
+    }
 
     const { passwordHash, ...rest } = user;
     return rest;

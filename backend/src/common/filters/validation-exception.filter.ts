@@ -1,30 +1,39 @@
-import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter } from '@nestjs/common';
-import { ValidationError } from 'class-validator';
+import {
+  ArgumentsHost,
+  BadRequestException,
+  Catch,
+  ExceptionFilter,
+} from '@nestjs/common';
 import { GqlArgumentsHost } from '@nestjs/graphql';
+import { GraphQLError } from 'graphql';
 
 @Catch(BadRequestException)
 export class ValidationExceptionFilter implements ExceptionFilter {
   catch(exception: BadRequestException, host: ArgumentsHost) {
     const gqlHost = GqlArgumentsHost.create(host);
-
-    // Prüfen, ob die Exception eine ValidationPipe-Exception ist
     const response: any = exception.getResponse();
-    const isValidationError = Array.isArray(response?.message);
 
-    if (!isValidationError) {
-      // Wenn KEIN ValidationError: normal weiterwerfen → Prisma Errors gehen durch!
+    // Nur Validation Errors behandeln
+    if (!Array.isArray(response?.message)) {
       throw exception;
     }
 
-    // GraphQL-Fehlerformatierung
-    const graphQLError = {
-      message: 'Validation failed',
-      extensions: {
-        statusCode: 400,
-        errors: response.message,
-      },
-    };
+    // Feld-Fehler extrahieren
+    const fieldErrors: Record<string, string[]> = {};
 
-    return graphQLError;
+    for (const err of response.message) {
+      const field = err.split(' ')[0]; // nimmt das erste Wort als Feldname (z.B. "password")
+      if (!fieldErrors[field]) fieldErrors[field] = [];
+      fieldErrors[field].push(err);
+    }
+
+    // 🔥 WICHTIG: ECHTEN GraphQLError werfen!
+    throw new GraphQLError('Validation failed', {
+      extensions: {
+        code: 'BAD_USER_INPUT',
+        statusCode: 400,
+        fieldErrors,
+      },
+    });
   }
 }
