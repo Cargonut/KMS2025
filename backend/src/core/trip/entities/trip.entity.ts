@@ -1,4 +1,4 @@
-import { ObjectType, Field, ID, Float, Int } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Float, Int, GraphQLISODateTime } from '@nestjs/graphql';
 import { User } from '../../user/entities/user.entity';
 import { Vehicle } from '../../vehicle/entities/vehicle.entity';
 import { TripPassenger } from '../../trip-passenger/entities/trip-passenger.entity';
@@ -20,10 +20,8 @@ export class Trip {
     @Field(() => TripType)
     type: TripType;
 
-
     @Field(() => Int)
     user_id: number;
-
 
     @Field()
     from_location: string;
@@ -34,10 +32,11 @@ export class Trip {
     @Field({ nullable: true })
     via?: string;
 
-    @Field()
+    // ⬇️ WICHTIG: ISO DATE TYPE
+    @Field(() => GraphQLISODateTime)
     start_date: Date;
 
-    @Field({ nullable: true })
+    @Field(() => GraphQLISODateTime, { nullable: true })
     end_date?: Date;
 
     @Field(() => Int, { nullable: true })

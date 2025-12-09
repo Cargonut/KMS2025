@@ -1,4 +1,4 @@
-import { InputType, Field, Int, Float, PartialType } from '@nestjs/graphql';
+import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
 import { CreateTripInput } from './create-trip.input';
 
 @InputType()

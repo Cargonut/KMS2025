@@ -1,113 +1,117 @@
-import { Resolver, Mutation, Args, Query, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { UseGuards } from '@nestjs/common';
-import { UserService } from '../../core/user/user.service';
+
 import { AuthService } from '../../auth/auth.service';
+import { AuthResponse } from '../../auth/entities/auth-response.entity';
+import { LoginInput } from '../../auth/dto/login.input';
+
+import { User } from '../../core/user/entities/user.entity';
+import { CreateUserInput } from '../../core/user/dto/create-user.input';
+import { UserService } from '../../core/user/user.service';
+
 import { GqlAuthGuard } from '../../auth/gql-auth.guard';
 import { CurrentUser } from '../../auth/current-user.decorator';
-import { UpdatePasswordInput } from '../../core/user/dto/update-password.input';
+
 import { UpdateUserInput } from '../../core/user/dto/update-user.input';
-import { CreateUserInput } from '../../core/user/dto/create-user.input';
-import { User } from '../../core/user/entities/user.entity';
-import { UnauthorizedException } from '@nestjs/common';
 
 
 @Resolver(() => User)
 export class UserResolver {
   constructor(
     private readonly userService: UserService,
-    private readonly auth: AuthService,
+    private readonly authService: AuthService,
   ) { }
 
-  @UseGuards(GqlAuthGuard)
-  @Query(() => [User])
-  async users() {
-    return this.userService.findAll();
-  }
-
-
-  @Mutation(() => User, { nullable: true })
-  async signup(@Args('data') data: CreateUserInput): Promise<User | null> {
-    const passwordHash = await this.auth.hashPassword(data.password);
-
-    try {
-      return await this.userService.create({
-        first_name: data.first_name,
-        last_name: data.last_name,
-        email: data.email,
-        birth_date: data.birth_date,
-        phone: data.phone,
-        profile_image: data.profile_image,
-        additional_note: data.additional_note,
-        passwordHash,
-      });
-    } catch (err: any) {
-      // Mercurius MUSS explizit mit einem Error abbrechen
-      throw new Error(err.message);
-    }
-  }
-
-  @UseGuards(GqlAuthGuard)
-  @Mutation(() => Boolean)
-  async deleteMe(
-    @CurrentUser() user: any,
-    @Args('password') password: string,
-  ) {
-    const foundUser = await this.userService.findOne(user.id);
-
-    if (!foundUser) {
-      throw new UnauthorizedException('User not found');
-    }
-
-    const isValid = await this.auth.comparePasswords(
-      password,
-      foundUser.passwordHash,
-    );
-
-    if (!isValid) {
-      throw new UnauthorizedException('Invalid password');
-    }
-
-    await this.userService.deleteUser(user.id);
-    return true;
-  }
-
-
-
-
-  @Mutation(() => String)
+  // -------------------------------
+  // LOGIN
+  // -------------------------------
+  @Mutation(() => AuthResponse)
   async login(
-    @Args('email') email: string,
-    @Args('password') password: string,
+    @Args('data', { type: () => LoginInput }) data: LoginInput,
   ) {
-    const user = await this.auth.validateUser(email, password);
-    return (await this.auth.login(user)).accessToken;
+    return this.authService.login(data);
   }
 
+  // -------------------------------
+  // SIGNUP
+  // -------------------------------
+  @Mutation(() => User)
+  async signup(
+    @Args('data', { type: () => CreateUserInput }) data: CreateUserInput,
+  ) {
+    return this.userService.create(data);
+  }
+
+  // -------------------------------
+  // CURRENT USER
+  // -------------------------------
   @UseGuards(GqlAuthGuard)
   @Query(() => User)
-  me(@CurrentUser() user: any) {
-    return this.userService.findOne(user.id);
+  me(@CurrentUser() user: User) {
+    return user;
   }
 
+  // -------------------------------
+  // UPDATE ME
+  // -------------------------------
   @UseGuards(GqlAuthGuard)
   @Mutation(() => User)
-  updateMe(
-    @CurrentUser() user: any,
-    @Args('data') data: UpdateUserInput,
+  async updateMe(
+    @CurrentUser() user: User,
+    @Args('data', { type: () => UpdateUserInput }) data: UpdateUserInput,
   ) {
     return this.userService.updateUser(user.id, data);
   }
 
+
+  // -------------------------------
+  // UPDATE PASSWORD
+  // -------------------------------
   @UseGuards(GqlAuthGuard)
-  @Mutation(() => User)
+  @Mutation(() => Boolean)
   async updatePassword(
-    @CurrentUser() user: any,
-    @Args('data') data: UpdatePasswordInput,
+    @CurrentUser() user: User,
+    @Args('oldPassword') oldPassword: string,
+    @Args('newPassword') newPassword: string,
   ) {
-    return this.userService.updatePassword(
+    await this.userService.updatePassword(
       user.id,
-      data.oldPassword,
-      data.newPassword,
+      oldPassword,
+      newPassword,
     );
+
+    return true;
+  }
+
+  // -------------------------------
+  // DELETE ME
+  // -------------------------------
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => Boolean)
+  async deleteMe(
+    @CurrentUser() user: User,
+    @Args('password') password: string,
+  ) {
+    // 1️⃣ Echten User aus DB holen (inkl. passwordHash)
+    const dbUser = await this.userService.findByEmail(user.email);
+
+    if (!dbUser) {
+      throw new Error('User not found');
+    }
+
+    // 2️⃣ Passwort prüfen
+    const valid = await this.authService.comparePasswords(
+      password,
+      dbUser.passwordHash,
+    );
+
+    if (!valid) {
+      throw new Error('Password incorrect.');
+    }
+
+    // 3️⃣ User löschen
+    await this.userService.deleteUser(dbUser.id);
+
+    return true;
   }
 }

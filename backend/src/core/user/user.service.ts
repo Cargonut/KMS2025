@@ -28,22 +28,36 @@ export class UserService {
   // --------------------------------------------------------
   async create(data) {
     try {
-      const result = await this.prisma.user.create({ data });
+      // 1. Passwort hashen
+      const hashedPassword = await this.authService.hashPassword(data.password);
 
-      console.log("🔍 PRISMA CREATE RESULT:", result);
+      // 2. Daten für Prisma vorbereiten
+      const userData = {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+        birth_date: new Date(data.birth_date),
+        phone: data.phone ?? null,
+        profile_image: data.profile_image ?? null,
+        additional_note: data.additional_note ?? null,
+        passwordHash: hashedPassword,
+      };
+
+      // 3. User erstellen
+      const result = await this.prisma.user.create({
+        data: userData,
+      });
 
       return result;
 
     } catch (err: any) {
-      console.log("❌ PRISMA CREATE ERROR:", err);
-
       if (err.code === 'P2002') {
         throw new Error('Email already taken.');
       }
-
       throw err;
     }
   }
+
 
 
   // --------------------------------------------------------

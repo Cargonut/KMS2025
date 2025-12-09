@@ -3,6 +3,9 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../core/user/user.service';
 import { GraphQLError } from 'graphql';
+import { LoginInput } from './dto/login.input';
+import { AuthResponse } from './entities/auth-response.entity';
+
 
 @Injectable()
 export class AuthService {
@@ -11,7 +14,7 @@ export class AuthService {
     private readonly userService: UserService,
 
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, password: string) {
     const user = await this.userService.findByEmail(email);
@@ -40,14 +43,40 @@ export class AuthService {
     return rest;
   }
 
-  async login(user: { id: number; email: string }) {
+  async login(data: LoginInput): Promise<AuthResponse> {
+    // 1. User validieren
+    const user = await this.userService.findByEmail(data.email);
+
+    if (!user) {
+      throw new GraphQLError('Invalid credentials', {
+        extensions: { code: 'UNAUTHORIZED', statusCode: 401 },
+      });
+    }
+
+    const isValid = await bcrypt.compare(data.password, user.passwordHash);
+
+    if (!isValid) {
+      throw new GraphQLError('Invalid credentials', {
+        extensions: { code: 'UNAUTHORIZED', statusCode: 401 },
+      });
+    }
+
+    // 2. Token generieren
+    const token = await this.jwtService.signAsync({
+      sub: user.id,
+      email: user.email,
+    });
+
+    // 3. Password entfernen
+    const { passwordHash, ...rest } = user;
+
+    // 4. Response im neuen Format zurückgeben
     return {
-      accessToken: await this.jwtService.signAsync({
-        sub: user.id,
-        email: user.email,
-      }),
+      token,
+      user: rest,
     };
   }
+
 
   async hashPassword(password: string) {
     return bcrypt.hash(password, 10);

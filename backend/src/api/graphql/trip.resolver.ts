@@ -1,64 +1,67 @@
-import { Resolver, Query, Mutation, Args, Int, ResolveField, Parent } from '@nestjs/graphql';
-import { Trip } from '../../core/trip/entities/trip.entity';
+import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+
 import { TripService } from '../../core/trip/trip.service';
 import { CreateTripInput } from '../../core/trip/dto/create-trip.input';
 import { UpdateTripInput } from '../../core/trip/dto/update-trip.input';
-import { PrismaService } from '../../prisma/prisma.service';
-import { User } from '../../core/user/entities/user.entity';
-import { Vehicle } from '../../core/vehicle/entities/vehicle.entity';
+import { Trip } from '../../core/trip/entities/trip.entity';
+
+import { GqlAuthGuard } from '../../auth/gql-auth.guard';
+import { CurrentUser } from '../../auth/current-user.decorator';
 
 @Resolver(() => Trip)
 export class TripResolver {
-  constructor(
-    private tripService: TripService,
-    private prisma: PrismaService
-  ) {}
+  constructor(private readonly tripService: TripService) {}
 
-  // GET /trips
+  // ----------------------------------------------------
+  // GET ALL TRIPS (Public)
+  // ----------------------------------------------------
   @Query(() => [Trip])
   async trips() {
     return this.tripService.findAll();
   }
 
-  // GET /trip/:id
-  @Query(() => Trip, { nullable: true })
+  // ----------------------------------------------------
+  // GET SINGLE TRIP (Public)
+  // ----------------------------------------------------
+  @Query(() => Trip)
   async trip(@Args('id', { type: () => Int }) id: number) {
     return this.tripService.findOne(id);
   }
 
-  // CREATE Trip
+  // ----------------------------------------------------
+  // CREATE TRIP (Requires Auth)
+  // ----------------------------------------------------
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => Trip)
-  createTrip(@Args('data') data: CreateTripInput) {
-    return this.tripService.create(data);
+  async createTrip(
+    @CurrentUser() user: { id: number },
+    @Args('data', { type: () => CreateTripInput }) data: CreateTripInput,
+  ) {
+    return this.tripService.createTrip(user.id, data);
   }
 
-  // UPDATE Trip
+  // ----------------------------------------------------
+  // UPDATE TRIP (Requires Auth + Ownership)
+  // ----------------------------------------------------
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => Trip)
-  updateTrip(@Args('data') data: UpdateTripInput) {
-    return this.tripService.update(data.id, data);
+  async updateTrip(
+    @CurrentUser() user: { id: number },
+    @Args('data', { type: () => UpdateTripInput }) data: UpdateTripInput,
+  ) {
+    return this.tripService.updateTrip(data.id, user.id, data);
   }
 
-  // DELETE Trip
+  // ----------------------------------------------------
+  // DELETE TRIP (Requires Auth + Ownership)
+  // ----------------------------------------------------
+  @UseGuards(GqlAuthGuard)
   @Mutation(() => Boolean)
-  async deleteTrip(@Args('id', { type: () => Int }) id: number) {
-    await this.tripService.delete(id);
-    return true;
-  }
-
-  // Relation: Trip.user
-  @ResolveField(() => User, { nullable: true })
-  async user(@Parent() trip: Trip) {
-    return this.prisma.user.findUnique({
-      where: { id: trip.user_id },
-    });
-  }
-
-  // Relation: Trip.vehicle
-  @ResolveField(() => Vehicle, { nullable: true })
-  async vehicle(@Parent() trip: Trip) {
-    if (!trip.vehicle_id) return null;
-    return this.prisma.vehicle.findUnique({
-      where: { id: trip.vehicle_id },
-    });
+  async deleteTrip(
+    @CurrentUser() user: { id: number },
+    @Args('id', { type: () => Int }) id: number,
+  ) {
+    return this.tripService.deleteTrip(id, user.id);
   }
 }

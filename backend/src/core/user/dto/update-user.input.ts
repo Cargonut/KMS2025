@@ -1,5 +1,5 @@
 import { InputType, Field, GraphQLISODateTime } from '@nestjs/graphql';
-import { IsOptional, IsString, IsDateString } from 'class-validator';
+import { IsOptional, IsString, IsDate } from 'class-validator';
 
 @InputType()
 export class UpdateUserInput {
@@ -13,10 +13,11 @@ export class UpdateUserInput {
   @IsString()
   last_name?: string;
 
-  @Field({ nullable: true })
+  @Field(() => GraphQLISODateTime, { nullable: true })
   @IsOptional()
-  @IsDateString()
+  @IsDate()
   birth_date?: Date;
+
 
   @Field({ nullable: true })
   @IsOptional()
