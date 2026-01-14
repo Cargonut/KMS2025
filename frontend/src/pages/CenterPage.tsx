@@ -23,7 +23,9 @@ export default function CenterPage() {
         </div>
 
         <footer className="page__footer page__footer--sm">
-          <Link to="/impressum">Impressum</Link>
+          <Link to="/impressum" className="page__footer-link">
+            Impressum
+          </Link>
         </footer>
       </section>
     </main>

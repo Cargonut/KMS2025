@@ -59,6 +59,7 @@ export default function OfferPrereqForm({ profile, onSubmit, busy, message }: Of
                 <label className="field">
                     <span>Notiz</span>
                     <textarea
+                        className="field__control"
                         name="additional_note"
                         value={form.additional_note || ''}
                         onChange={(e) => handleChange(e.target.name, e.target.value)}

@@ -29,7 +29,9 @@ export default function LandingPage() {
         </nav>
 
         <footer className="page__footer page__footer--sm page__footer--spaced">
-          <Link to="/impressum">Impressum</Link>
+          <Link to="/impressum" className="page__footer-link">
+            Impressum
+          </Link>
         </footer>
       </section>
     </main>

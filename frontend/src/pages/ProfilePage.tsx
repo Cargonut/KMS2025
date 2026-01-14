@@ -42,7 +42,7 @@ export default function ProfilePage() {
       <header className="page__header page__header--center">
         <div>
           <Logo alt="Esuap" className="page__logo" size={180} />
-          <h1>Profil</h1>
+          <h1 className="heading heading--xl">Profil</h1>
           <p className="muted">Deine hinterlegten Daten.</p>
         </div>
         <div className="session session--center">
@@ -59,7 +59,9 @@ export default function ProfilePage() {
       </section>
 
       <footer className="page__footer">
-        <Link to="/impressum">Impressum</Link>
+        <Link to="/impressum" className="page__footer-link">
+          Impressum
+        </Link>
       </footer>
     </main>
   );

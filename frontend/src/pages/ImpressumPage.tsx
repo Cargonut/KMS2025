@@ -8,7 +8,7 @@ export default function ImpressumPage() {
       <header className="page__header page__header--center">
         <div>
           <Logo alt="Esuap" className="page__logo" size={180} />
-          <h1>Impressum</h1>
+          <h1 className="heading heading--xl">Impressum</h1>
           <p className="muted">Rechtliche Angaben und Kontakt.</p>
         </div>
       </header>

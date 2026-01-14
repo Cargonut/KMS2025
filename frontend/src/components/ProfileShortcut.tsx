@@ -54,7 +54,7 @@ export default function ProfileShortcut() {
   return (
     <Link to="/profile" className="profile-shortcut" aria-label="Zum Profil">
       {profile?.profile_image ? (
-        <img src={profile.profile_image} alt="Profilbild" />
+        <img className="profile-shortcut__image" src={profile.profile_image} alt="Profilbild" />
       ) : (
         <span className="profile-shortcut__fallback">{fallback}</span>
       )}

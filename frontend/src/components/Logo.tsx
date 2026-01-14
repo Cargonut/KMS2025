@@ -12,8 +12,8 @@ export default function Logo({ alt = "Logo", className, size = 220 }: Props) {
 
   return (
     <div className={classes}>
-      <Link to="/" aria-label={alt}>
-        <img src={logo} alt={alt} style={{ maxWidth: size, width: "100%", height: "auto" }} />
+      <Link to="/" className="logo__link" aria-label={alt}>
+        <img className="logo__image" src={logo} alt={alt} style={{ maxWidth: size }} />
       </Link>
     </div>
   );

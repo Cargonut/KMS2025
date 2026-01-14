@@ -127,6 +127,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                     <label className="field">
                         <span>Ladefläche (m²)</span>
                         <input
+                            className="field__control"
                             name="load_area"
                             type="number"
                             min="0"
@@ -139,6 +140,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                     <label className="field">
                         <span>Motortyp</span>
                         <select
+                            className="field__control"
                             name="motor_type"
                             value={form.motor_type}
                             onChange={(e) => handleMotorChange(e.target.value as MotorType)}
@@ -156,6 +158,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                     <label className="field">
                         <span>Max. Zuladung (kg)</span>
                         <input
+                            className="field__control"
                             name="weight"
                             type="number"
                             min="0"
@@ -175,6 +178,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                 <label className="field">
                     <span>Besonderheiten</span>
                     <textarea
+                        className="field__control"
                         name="special_features"
                         value={form.special_features || ''}
                         onChange={(e) => handleChange(e.target.name, e.target.value)}
@@ -184,14 +188,20 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                 </label>
                 <label className="field">
                     <span>Fahrzeugbilder hochladen</span>
-                    <input type="file" accept="image/*" multiple onChange={(e) => handleUpload(e.target.files)} />
+                    <input
+                        className="field__control"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(e) => handleUpload(e.target.files)}
+                    />
                     {uploading && <span className="muted">Upload läuft...</span>}
                 </label>
                 {form.image_urls && form.image_urls.length > 0 && (
                     <div className="vehicle__images">
                         {form.image_urls.map((url) => (
                             <div key={url} className="vehicle__image">
-                                <img src={url} alt="Fahrzeugbild" />
+                                <img className="vehicle__image-preview" src={url} alt="Fahrzeugbild" />
                                 <button type="button" className="btn btn--ghost" onClick={() => removeImage(url)}>
                                     Entfernen
                                 </button>
@@ -233,7 +243,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                                 {vehicle.image_urls && vehicle.image_urls.length > 0 && (
                                     <div className="vehicle__thumbs">
                                         {vehicle.image_urls.map((url) => (
-                                            <img key={url} src={url} alt="Fahrzeug" />
+                                            <img key={url} className="vehicle__thumb" src={url} alt="Fahrzeug" />
                                         ))}
                                     </div>
                                 )}

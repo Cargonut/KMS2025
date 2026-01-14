@@ -117,6 +117,7 @@ export default function SignupForm({ onSubmit, busy, message }: SignupFormProps)
                 <label className="field">
                     <span>Notiz</span>
                     <textarea
+                        className="field__control"
                         name="additional_note"
                         value={form.additional_note || ''}
                         onChange={(e) => handleChange(e.target.name, e.target.value)}

@@ -35,7 +35,7 @@ export default function SignUpPage() {
       <header className="page__header page__header--center">
         <div>
           <Logo alt="Esuap" className="page__logo" size={180} />
-          <h1>Registrierung</h1>
+          <h1 className="heading heading--xl">Registrierung</h1>
           <p className="muted">Account anlegen, um Angebote zu erstellen.</p>
         </div>
         <div className="session session--center">
@@ -50,7 +50,9 @@ export default function SignUpPage() {
       </section>
 
       <footer className="muted page__footer">
-        <Link to="/impressum">Impressum</Link>
+        <Link to="/impressum" className="page__footer-link">
+          Impressum
+        </Link>
       </footer>
     </main>
   );

@@ -25,6 +25,7 @@ export default function Field({
         <label className={labelClassName}>
             <span>{label}</span>
             <input
+                className="field__control"
                 name={name}
                 type={type}
                 required={required}

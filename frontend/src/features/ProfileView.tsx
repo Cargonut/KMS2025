@@ -31,32 +31,36 @@ export default function ProfileView({ profile, refresh }: ProfileViewProps) {
             ) : (
                 <div className="profile">
                     <div className="profile__avatar" aria-label="Profilbild">
-                        {profile.profile_image ? <img src={profile.profile_image} alt="Profilbild" /> : <span>Kein Bild</span>}
+                        {profile.profile_image ? (
+                            <img className="profile__avatar-image" src={profile.profile_image} alt="Profilbild" />
+                        ) : (
+                            <span>Kein Bild</span>
+                        )}
                     </div>
-                    <dl>
+                    <dl className="definition-list">
                         <div>
-                            <dt>Vorname</dt>
-                            <dd>{profile.first_name}</dd>
+                            <dt className="definition-list__term">Vorname</dt>
+                            <dd className="definition-list__desc">{profile.first_name}</dd>
                         </div>
                         <div>
-                            <dt>Nachname</dt>
-                            <dd>{profile.last_name ? `${profile.last_name[0]}.` : 'k.A.'}</dd>
+                            <dt className="definition-list__term">Nachname</dt>
+                            <dd className="definition-list__desc">{profile.last_name ? `${profile.last_name[0]}.` : 'k.A.'}</dd>
                         </div>
                         <div>
-                            <dt>Alter</dt>
-                            <dd>{age ?? 'k.A.'}</dd>
+                            <dt className="definition-list__term">Alter</dt>
+                            <dd className="definition-list__desc">{age ?? 'k.A.'}</dd>
                         </div>
                         <div>
-                            <dt>E-Mail</dt>
-                            <dd>{profile.email}</dd>
+                            <dt className="definition-list__term">E-Mail</dt>
+                            <dd className="definition-list__desc">{profile.email}</dd>
                         </div>
                         <div>
-                            <dt>Handy (intern)</dt>
-                            <dd>{profile.phone || 'nicht hinterlegt'}</dd>
+                            <dt className="definition-list__term">Handy (intern)</dt>
+                            <dd className="definition-list__desc">{profile.phone || 'nicht hinterlegt'}</dd>
                         </div>
                         <div>
-                            <dt>Notiz</dt>
-                            <dd>{profile.additional_note || 'k.A.'}</dd>
+                            <dt className="definition-list__term">Notiz</dt>
+                            <dd className="definition-list__desc">{profile.additional_note || 'k.A.'}</dd>
                         </div>
                     </dl>
                 </div>

@@ -125,7 +125,7 @@ export default function AuthPage() {
             <header className="page__header">
                 <div>
                     <p className="eyebrow">MyCargonaut</p>
-                    <h1>Registrierung & Login</h1>
+                    <h1 className="heading heading--xl">Registrierung & Login</h1>
                     <p className="muted">Vite + React (TSX) UI gegen das vorhandene GraphQL-Backend.</p>
                 </div>
                 <div className="session">

@@ -74,7 +74,9 @@ export default function LoginPage() {
       </div>
 
       <footer className="login__footer page__footer page__footer--xs page__footer--inverse">
-        <Link to="/impressum">IMPRESSUM</Link>
+        <Link to="/impressum" className="page__footer-link">
+          IMPRESSUM
+        </Link>
       </footer>
     </main>
   );
