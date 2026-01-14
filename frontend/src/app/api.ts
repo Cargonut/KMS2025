@@ -65,13 +65,15 @@ export async function signupUser(data: SignupInput): Promise<void> {
 }
 
 export async function loginUser(email: string, password: string): Promise<string> {
-    const result = await graphqlRequest<{ login: string }>(
-        `mutation Login($email: String!, $password: String!) {
-      login(email: $email, password: $password)
+    const result = await graphqlRequest<{ login: { token: string } }>(
+        `mutation Login($data: LoginInput!) {
+      login(data: $data) {
+        token
+      }
     }`,
-        { email, password },
+        { data: { email, password } },
     );
-    return result.login;
+    return result.login.token;
 }
 
 export async function fetchProfile(token: string): Promise<Profile> {
