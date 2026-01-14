@@ -1,4 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/graphql';
+const API_BASE_URL = API_URL.replace(/\/graphql\/?$/, '');
 
 export type Profile = {
     id: string;
@@ -9,6 +10,19 @@ export type Profile = {
     phone?: string | null;
     profile_image?: string | null;
     additional_note?: string | null;
+};
+
+export type MotorType = 'benzin' | 'diesel' | 'hybrid' | 'elektro' | 'gas' | 'sonstiges';
+
+export type Vehicle = {
+    id: number;
+    name?: string | null;
+    special_features?: string | null;
+    weight?: number | null;
+    dimensions?: string | null;
+    load_area?: number | null;
+    motor_type?: MotorType | null;
+    image_urls?: string[];
 };
 
 export function calculateAge(dateString: string | null | undefined): number | null {
@@ -116,4 +130,82 @@ export async function updateProfile(data: UpdateProfileInput, token: string): Pr
         token,
     );
     return result.updateMe;
+}
+
+export type CreateVehicleInput = {
+    name: string;
+    load_area: number;
+    motor_type: MotorType;
+    special_features?: string | null;
+    weight?: number | null;
+    dimensions?: string | null;
+    image_urls?: string[];
+};
+
+export async function fetchMyVehicles(token: string): Promise<Vehicle[]> {
+    const result = await graphqlRequest<{ myVehicles: Vehicle[] }>(
+        `query MyVehicles {
+      myVehicles {
+        id
+        name
+        load_area
+        motor_type
+        image_urls
+        special_features
+        weight
+        dimensions
+      }
+    }`,
+        {},
+        token,
+    );
+    return result.myVehicles;
+}
+
+export async function createVehicle(data: CreateVehicleInput, token: string): Promise<Vehicle> {
+    const result = await graphqlRequest<{ createVehicle: Vehicle }>(
+        `mutation CreateVehicle($data: CreateVehicleInput!) {
+      createVehicle(data: $data) {
+        id
+        name
+        load_area
+        motor_type
+        image_urls
+        special_features
+        weight
+        dimensions
+      }
+    }`,
+        { data },
+        token,
+    );
+    return result.createVehicle;
+}
+
+export async function deleteVehicle(id: number, token: string): Promise<boolean> {
+    const result = await graphqlRequest<{ deleteVehicle: boolean }>(
+        `mutation DeleteVehicle($id: Int!) {
+      deleteVehicle(id: $id)
+    }`,
+        { id },
+        token,
+    );
+    return result.deleteVehicle;
+}
+
+export async function uploadVehicleImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE_URL}/upload/vehicle`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        throw new Error('Upload fehlgeschlagen.');
+    }
+
+    const payload: { url: string } = await response.json();
+    return `${API_BASE_URL}${payload.url}`;
 }

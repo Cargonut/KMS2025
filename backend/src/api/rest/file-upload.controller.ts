@@ -30,5 +30,30 @@ export class UploadController {
       filename,
     };
   }
+
+  @Post('vehicle')
+  async uploadVehicle(@Req() req: FastifyRequest) {
+    const data = await req.file();
+
+    if (!data) {
+      throw new Error('No file uploaded');
+    }
+
+    const filename = `${Date.now()}-${data.filename}`;
+    const filepath = join(process.cwd(), 'uploads/vehicle', filename);
+
+    await new Promise<void>((resolve, reject) => {
+      const stream = createWriteStream(filepath);
+      data.file.pipe(stream);
+
+      stream.on('finish', () => resolve());
+      stream.on('error', reject);
+    });
+
+    return {
+      url: `/uploads/vehicle/${filename}`,
+      filename,
+    };
+  }
 }
 

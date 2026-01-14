@@ -38,6 +38,9 @@ export class VehicleService {
         special_features: data.special_features,
         weight: data.weight,
         dimensions: data.dimensions,
+        load_area: data.load_area,
+        motor_type: data.motor_type,
+        image_urls: data.image_urls ?? [],
       },
     });
   }
@@ -57,6 +60,16 @@ export class VehicleService {
     return this.prisma.vehicle.update({
       where: { id },
       data,
+    });
+  }
+
+  // ---------------------------------------------------------
+  // GET VEHICLES BY OWNER
+  // ---------------------------------------------------------
+  findByUser(userId: number) {
+    return this.prisma.vehicle.findMany({
+      where: { user_id: userId },
+      orderBy: { id: 'desc' },
     });
   }
 

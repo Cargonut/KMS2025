@@ -28,6 +28,15 @@ export class VehicleResolver {
   }
 
   // -------------------------------------------------------
+  // GET VEHICLES FOR CURRENT USER
+  // -------------------------------------------------------
+  @UseGuards(GqlAuthGuard)
+  @Query(() => [Vehicle], { name: 'myVehicles' })
+  async getMyVehicles(@CurrentUser() user: any) {
+    return this.vehicleService.findByUser(user.id);
+  }
+
+  // -------------------------------------------------------
   // CREATE VEHICLE
   // -------------------------------------------------------
   @UseGuards(GqlAuthGuard)
