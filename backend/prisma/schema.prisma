@@ -29,14 +29,17 @@ model User {
 }
 
 model Vehicle {
-  id               Int     @id @default(autoincrement())
+  id               Int        @id @default(autoincrement())
   user_id          Int
   name             String?
   special_features String?
   weight           Float?
   dimensions       String?
+  load_area        Float?
+  motor_type       MotorType?
+  image_urls       String[]   @default([])
   trips            Trip[]
-  user             User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user             User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model Trip {
@@ -122,4 +125,13 @@ enum PassengerStatus {
   zugesagt
   storniert
   abgeschlossen
+}
+
+enum MotorType {
+  benzin
+  diesel
+  hybrid
+  elektro
+  gas
+  sonstiges
 }

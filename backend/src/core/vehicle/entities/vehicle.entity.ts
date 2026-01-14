@@ -1,6 +1,11 @@
-import { ObjectType, Field, ID, Float, Int } from '@nestjs/graphql';
+import { ObjectType, Field, ID, Float, Int, registerEnumType } from '@nestjs/graphql';
+import { MotorType } from '@prisma/client';
 import { User } from '../../user/entities/user.entity';
 import { Trip } from '../../trip/entities/trip.entity';
+
+registerEnumType(MotorType, {
+  name: 'MotorType',
+});
 
 @ObjectType()
 export class Vehicle {
@@ -21,6 +26,15 @@ export class Vehicle {
 
   @Field({ nullable: true })
   dimensions?: string;
+
+  @Field(() => Float, { nullable: true })
+  load_area?: number;
+
+  @Field(() => MotorType, { nullable: true })
+  motor_type?: MotorType;
+
+  @Field(() => [String], { nullable: 'itemsAndList' })
+  image_urls?: string[];
 
   @Field(() => User, { nullable: true })
   user?: User;

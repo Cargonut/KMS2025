@@ -1,5 +1,6 @@
-import { InputType, Field, Float, Int } from '@nestjs/graphql';
-import { IsOptional, IsString, IsNumber } from 'class-validator';
+import { InputType, Field, Float } from '@nestjs/graphql';
+import { MotorType } from '@prisma/client';
+import { IsArray, IsEnum, IsOptional, IsString, IsNumber } from 'class-validator';
 
 @InputType()
 export class CreateVehicleInput {
@@ -14,10 +15,25 @@ export class CreateVehicleInput {
 
   @Field(() => Float, { nullable: true })
   @IsOptional()
+  @IsNumber()
   weight?: number;
 
   @Field({ nullable: true })
   @IsOptional()
   @IsString()
   dimensions?: string;
+
+  @Field(() => Float)
+  @IsNumber()
+  load_area: number;
+
+  @Field(() => MotorType)
+  @IsEnum(MotorType)
+  motor_type: MotorType;
+
+  @Field(() => [String], { nullable: 'itemsAndList' })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  image_urls?: string[];
 }
