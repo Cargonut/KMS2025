@@ -1,9 +1,8 @@
 import { FormEvent, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../app/api";
 import Field from "../components/ui/Field";
 import MessageBox, { MessageTone } from "../components/ui/MessageBox";
-import "../styles/Login.css";
 import Logo from "../components/Logo";
 
 const storageKey = "cargonaut-token";
@@ -11,6 +10,7 @@ const storageKey = "cargonaut-token";
 type Message = { tone: MessageTone; text: string };
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -25,6 +25,8 @@ export default function LoginPage() {
       const token = await loginUser(email, password);
       localStorage.setItem(storageKey, token);
       setMessage({ tone: "success", text: "Login erfolgreich" });
+      window.dispatchEvent(new Event("auth-changed"));
+      navigate("/center");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unbekannter Fehler";
       setMessage({ tone: "error", text: msg });
@@ -34,7 +36,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="login">
+    <main className="login page-center">
       <Logo alt="Esuap" />
       <div className="login__card">
         <h1 className="login__title koho-bold">LOGIN</h1>
@@ -71,7 +73,7 @@ export default function LoginPage() {
         </form>
       </div>
 
-      <footer className="login__footer">
+      <footer className="login__footer page__footer page__footer--xs page__footer--inverse">
         <Link to="/impressum">IMPRESSUM</Link>
       </footer>
     </main>

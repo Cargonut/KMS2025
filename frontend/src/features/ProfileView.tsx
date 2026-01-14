@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { Profile, calculateAge } from '../../app/api';
-import Card from '../../components/ui/Card';
-import MessageBox from '../../components/ui/MessageBox';
+import { Profile, calculateAge } from '../app/api';
+import Card from '../components/ui/Card';
+import MessageBox from '../components/ui/MessageBox';
 
 type ProfileViewProps = {
     profile: Profile | null;
@@ -20,7 +20,7 @@ export default function ProfileView({ profile, refresh }: ProfileViewProps) {
             footer={
                 <div className="card__footer-row">
                     <span className="muted">Token wird lokal gespeichert.</span>
-                    <button className="btn ghost" type="button" onClick={refresh}>
+                    <button className="btn btn--ghost" type="button" onClick={refresh}>
                         Profil neu laden
                     </button>
                 </div>

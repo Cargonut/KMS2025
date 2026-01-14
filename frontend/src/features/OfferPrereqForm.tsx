@@ -1,8 +1,8 @@
 import { FormEvent, useEffect, useState } from 'react';
-import { Profile, UpdateProfileInput } from '../../app/api';
-import Card from '../../components/ui/Card';
-import Field from '../../components/ui/Field';
-import MessageBox from '../../components/ui/MessageBox';
+import { Profile, UpdateProfileInput } from '../app/api';
+import Card from '../components/ui/Card';
+import Field from '../components/ui/Field';
+import MessageBox from '../components/ui/MessageBox';
 import type { Message } from './types';
 
 const initialUpdate: UpdateProfileInput = {

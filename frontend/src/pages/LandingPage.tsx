@@ -5,12 +5,11 @@
 // Schriftzug - Impressum
 
 import { Link } from "react-router-dom";
-import "../styles/Landing.css";
 import Logo from "../components/Logo";
 
 export default function LandingPage() {
   return (
-    <main className="landing">
+    <main className="landing page-center">
       <section className="landing__content">
         <header>
           <Logo alt="Esuap" />
@@ -24,15 +23,13 @@ export default function LandingPage() {
             LOGIN
           </Link>
 
-          <Link to="/signup" className="btn secondary">
+          <Link to="/signup" className="btn">
             SIGN UP
           </Link>
         </nav>
 
-        <footer className="landing__footer">
-          <Link to="/impressum" className="landing__impressum">
-            Impressum
-          </Link>
+        <footer className="page__footer page__footer--sm page__footer--spaced">
+          <Link to="/impressum">Impressum</Link>
         </footer>
       </section>
     </main>

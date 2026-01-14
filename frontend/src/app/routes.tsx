@@ -4,6 +4,8 @@ import LoginPage from "../pages/LoginPage";
 import SignUpPage from "../pages/SignUpPage";
 import ImpressumPage from "../pages/ImpressumPage";
 import AuthPage from "../pages/AuthPage";
+import CenterPage from "../pages/CenterPage";
+import ProfilePage from "../pages/ProfilePage";
 
 export const routes: RouteObject[] = [
   { path: "*", element: <LandingPage /> },
@@ -11,4 +13,6 @@ export const routes: RouteObject[] = [
   { path: "/signup", element: <SignUpPage /> },
   { path: "/impressum", element: <ImpressumPage /> },
   { path: "/auth", element: <AuthPage /> },
+  { path: "/center", element: <CenterPage /> },
+  { path: "/profile", element: <ProfilePage /> },
 ];

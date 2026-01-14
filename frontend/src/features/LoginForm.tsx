@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
-import Card from '../../components/ui/Card';
-import Field from '../../components/ui/Field';
-import MessageBox from '../../components/ui/MessageBox';
+import Card from '../components/ui/Card';
+import Field from '../components/ui/Field';
+import MessageBox from '../components/ui/MessageBox';
 import type { Message } from './types';
 
 type LoginFormProps = {

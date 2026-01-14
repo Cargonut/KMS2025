@@ -3,7 +3,6 @@ import {
     Profile,
     UpdateProfileInput,
     Vehicle,
-    calculateAge,
     fetchMyVehicles,
     fetchProfile,
     loginUser,
@@ -11,12 +10,12 @@ import {
     updateProfile,
 } from '../app/api';
 import Card from '../components/ui/Card';
-import LoginForm from '../features/auth/LoginForm';
-import OfferPrereqForm from '../features/auth/OfferPrereqForm';
-import ProfileView from '../features/auth/ProfileView';
-import SignupForm, { SignupFormData } from '../features/auth/SignupForm';
-import VehicleManager from '../features/auth/VehicleManager';
-import type { Message } from '../features/auth/types';
+import LoginForm from '../features/LoginForm';
+import OfferPrereqForm from '../features/OfferPrereqForm';
+import ProfileView from '../features/ProfileView';
+import SignupForm, { SignupFormData, getSignupValidationError, toSignupInput } from '../features/SignupForm';
+import VehicleManager from '../features/VehicleManager';
+import type { Message } from '../features/types';
 
 const storageKey = 'cargonaut-token';
 
@@ -50,24 +49,12 @@ export default function AuthPage() {
         setSignupMessage(undefined);
         setBusy(true);
         try {
-            if (form.email !== form.emailConfirm) {
-                throw new Error('E-Mail und Bestätigung stimmen nicht überein.');
-            }
-            const age = calculateAge(form.birth_date);
-            if (age === null || age < 18) {
-                throw new Error('Du musst mindestens 18 Jahre alt sein.');
+            const validationError = getSignupValidationError(form);
+            if (validationError) {
+                throw new Error(validationError);
             }
 
-            await signupUser({
-                first_name: form.first_name,
-                last_name: form.last_name,
-                email: form.email,
-                password: form.password,
-                birth_date: new Date(form.birth_date).toISOString(),
-                phone: form.phone || null,
-                profile_image: form.profile_image || null,
-                additional_note: form.additional_note || null,
-            });
+            await signupUser(toSignupInput(form));
 
             setSignupMessage({ tone: 'success', text: 'Registrierung erfolgreich! Bitte jetzt einloggen.' });
             reset();
@@ -85,6 +72,7 @@ export default function AuthPage() {
         try {
             const newToken = await loginUser(email, password);
             localStorage.setItem(storageKey, newToken);
+            window.dispatchEvent(new Event("auth-changed"));
             setToken(newToken);
             setLoginMessage({ tone: 'success', text: 'Login erfolgreich. Profil wird geladen...' });
             reset();
@@ -126,6 +114,7 @@ export default function AuthPage() {
 
     const logout = () => {
         localStorage.removeItem(storageKey);
+        window.dispatchEvent(new Event("auth-changed"));
         setToken('');
         setProfile(null);
         setLoginMessage({ tone: 'info', text: 'Abgemeldet.' });
@@ -142,7 +131,7 @@ export default function AuthPage() {
                 <div className="session">
                     <span className="badge">{token ? 'Session aktiv' : 'nicht eingeloggt'}</span>
                     {token ? (
-                        <button type="button" className="btn ghost" onClick={logout}>
+                        <button type="button" className="btn btn--ghost" onClick={logout}>
                             Logout
                         </button>
                     ) : null}

@@ -1,8 +1,8 @@
 import { FormEvent, useState } from 'react';
-import { MotorType, Vehicle, createVehicle, deleteVehicle, uploadVehicleImage } from '../../app/api';
-import Card from '../../components/ui/Card';
-import Field from '../../components/ui/Field';
-import MessageBox from '../../components/ui/MessageBox';
+import { MotorType, Vehicle, createVehicle, deleteVehicle, uploadVehicleImage } from '../app/api';
+import Card from '../components/ui/Card';
+import Field from '../components/ui/Field';
+import MessageBox from '../components/ui/MessageBox';
 import type { Message } from './types';
 
 type VehicleForm = {
@@ -123,7 +123,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
         <Card title="Fahrzeugverwaltung">
             <form className="stack" onSubmit={submit}>
                 <Field label="Fahrzeugname" name="name" required value={form.name} onChange={handleChange} />
-                <div className="grid two">
+                <div className="grid grid--two">
                     <label className="field">
                         <span>Ladefläche (m²)</span>
                         <input
@@ -152,7 +152,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                         </select>
                     </label>
                 </div>
-                <div className="grid two">
+                <div className="grid grid--two">
                     <label className="field">
                         <span>Max. Zuladung (kg)</span>
                         <input
@@ -192,7 +192,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                         {form.image_urls.map((url) => (
                             <div key={url} className="vehicle__image">
                                 <img src={url} alt="Fahrzeugbild" />
-                                <button type="button" className="btn ghost" onClick={() => removeImage(url)}>
+                                <button type="button" className="btn btn--ghost" onClick={() => removeImage(url)}>
                                     Entfernen
                                 </button>
                             </div>
@@ -217,7 +217,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                                     {vehicle.id ? (
                                         <button
                                             type="button"
-                                            className="btn ghost"
+                                            className="btn btn--ghost"
                                             onClick={() => handleDelete(vehicle.id)}
                                             disabled={busy}
                                         >
