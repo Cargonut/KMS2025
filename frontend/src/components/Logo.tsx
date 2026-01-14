@@ -1,0 +1,15 @@
+import logo from "../assets/LOGO.png";
+
+type Props = {
+  alt?: string;
+  className?: string;
+  size?: number; // max-width in px
+};
+
+export default function Logo({ alt = "Logo", className, size = 220 }: Props) {
+  return (
+    <div className={className ?? "Logo"}>
+      <img src={logo} alt={alt} style={{ maxWidth: size, width: "100%", height: "auto" }} />
+    </div>
+  );
+}

@@ -30,23 +30,23 @@ export default function ImpressumPage() {
 
         <article style={{ lineHeight: 1.6 }}>
           <p>
-            <strong>MyCargonaut</strong>
+            <strong>Esuap Transportations GmbH & Weinachtsmann & Co. KG</strong>
           </p>
 
           <p>
-            Max Mustermann<br />
-            Musterstraße 1<br />
-            12345 Musterstadt
+            Esnikel Esuap<br />
+            Adolph-Kolping-Str. 1<br />
+            12345 Köthen
           </p>
 
           <p>
-            E-Mail: kontakt@mycargonaut.de
+            E-Mail: kontakt@esuap.de
           </p>
 
           <p>
             Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:
             <br />
-            Max Mustermann
+            Esnikel Esuap
           </p>
         </article>
 

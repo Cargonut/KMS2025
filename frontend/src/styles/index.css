@@ -13,6 +13,12 @@
   --colorWhite: #f0f5f5;
 }
 
+.Logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 
 * {
   box-sizing: border-box;

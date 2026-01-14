@@ -6,18 +6,14 @@
 
 import { Link } from "react-router-dom";
 import "../styles/Landing.css";
-import "../styles/Landing.css";
-import logo from "../assets/LOGO.png";
-
+import Logo from "../components/Logo";
 
 export default function LandingPage() {
   return (
     <main className="landing">
       <section className="landing__content">
         <header>
-          <div className="landing__logo">
-            <img src={logo} alt="Esuap" />
-          </div>
+          <Logo alt="Esuap" />
           <p className="landing__subtitle">
             Mitfahrgelegenheiten für Cargo & Menschen
           </p>
