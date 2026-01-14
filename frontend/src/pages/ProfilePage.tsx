@@ -1,5 +1,5 @@
 // Elemente:
-// Logo
+// Profilpicture
 // Formular:
 // - Überschrift
 // - Linie
@@ -9,10 +9,6 @@
 // - Eingabe Geburtsdatum
 // - Eingabe Passwort
 // - Eingabe Passwort bestätigen
-// - Eingabe Stadt
-// - Eingabe Postleitzahl
-// - Eingabe Straße 
-// - Eingabe Hausnummer
-// - Eingabe Beschreibung
-// Button - Sign Up
+// - Button Edit
+// - Button Delete
 // Schriftzug - Impressum
