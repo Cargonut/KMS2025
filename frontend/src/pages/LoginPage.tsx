@@ -45,6 +45,7 @@ export default function LoginPage() {
         <form className="login__form" onSubmit={submit}>
           <Field
             className="login__field"
+            inputClassName="login__control"
             label="EMAIL"
             name="email"
             type="email"
@@ -56,6 +57,7 @@ export default function LoginPage() {
 
           <Field
             className="login__field"
+            inputClassName="login__control"
             label="PASSWORD"
             name="password"
             type="password"

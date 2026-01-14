@@ -188,7 +188,7 @@
   letter-spacing: 0.05em;
 }
 
-.login__field .field__control {
+.login__control {
   padding: 0.75rem;
   border: none;
   border-radius: 6px;
@@ -198,7 +198,7 @@
   outline: none;
 }
 
-.login__field .field__control:focus {
+.login__control:focus {
   box-shadow: none;
 }
 
