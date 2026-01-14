@@ -23,8 +23,8 @@ Imports are wired in `frontend/src/main.tsx` in a stable order.
 
 ## Utilities and shared patterns
 - Layout helpers: `.page-center`, `.page-stack`, `.stack`, `.grid`, `.grid--two`.
-- Shared page bits: `.page__content`, `.page__footer`, `.page__footer--sm`, `.page__footer--xs`, `.page__footer--spaced`, `.page__footer--inverse`.
-- Text helpers: `.muted`, `.eyebrow`.
+- Shared page bits: `.page__content`, `.page__footer`, `.page__footer-link`, `.page__footer--sm`, `.page__footer--xs`, `.page__footer--spaced`, `.page__footer--inverse`.
+- Text helpers: `.heading`, `.heading--xl`, `.muted`, `.eyebrow`.
 
 ## Do / Don't
 1) Do use `block__element--modifier` naming; don't invent new casing styles.
