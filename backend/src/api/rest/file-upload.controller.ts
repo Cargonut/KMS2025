@@ -1,6 +1,7 @@
 import { Controller, Post, Req } from '@nestjs/common';
 import { FastifyRequest } from 'fastify';
 import { createWriteStream } from 'fs';
+import { mkdir } from 'fs/promises';
 import { join } from 'path';
 
 @Controller('upload')
@@ -15,7 +16,9 @@ export class UploadController {
     }
 
     const filename = `${Date.now()}-${data.filename}`;
-    const filepath = join(process.cwd(), 'uploads/profile', filename);
+    const uploadDir = join(process.cwd(), 'uploads/profile');
+    await mkdir(uploadDir, { recursive: true });
+    const filepath = join(uploadDir, filename);
 
     await new Promise<void>((resolve, reject) => {
       const stream = createWriteStream(filepath);
@@ -40,7 +43,9 @@ export class UploadController {
     }
 
     const filename = `${Date.now()}-${data.filename}`;
-    const filepath = join(process.cwd(), 'uploads/vehicle', filename);
+    const uploadDir = join(process.cwd(), 'uploads/vehicle');
+    await mkdir(uploadDir, { recursive: true });
+    const filepath = join(uploadDir, filename);
 
     await new Promise<void>((resolve, reject) => {
       const stream = createWriteStream(filepath);

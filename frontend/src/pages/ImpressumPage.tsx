@@ -4,7 +4,7 @@ import Card from "../components/ui/Card";
 
 export default function ImpressumPage() {
   return (
-    <main className="page impressum page-stack">
+    <main className="page page-stack">
       <header className="page__header page__header--center">
         <div>
           <Logo alt="Esuap" className="page__logo" size={180} />
@@ -24,7 +24,7 @@ export default function ImpressumPage() {
             </div>
           }
         >
-          <div className="impressum__details">
+          <div className="impressum__details stack">
             <p>
               <strong>Esuap Transportations GmbH & Weihnachtsmann &amp; Co. KG</strong>
             </p>

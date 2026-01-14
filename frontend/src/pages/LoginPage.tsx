@@ -42,9 +42,9 @@ export default function LoginPage() {
         <h1 className="login__title koho-bold">LOGIN</h1>
         <div className="login__divider" />
 
-        <form className="login__form" onSubmit={submit}>
+        <form className="stack stack--lg" onSubmit={submit}>
           <Field
-            className="login__field"
+            className="login__field field--tight"
             inputClassName="login__control"
             label="EMAIL"
             name="email"
@@ -56,7 +56,7 @@ export default function LoginPage() {
           />
 
           <Field
-            className="login__field"
+            className="login__field field--tight"
             inputClassName="login__control"
             label="PASSWORD"
             name="password"

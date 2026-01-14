@@ -1,4 +1,6 @@
 import { Link, Navigate } from "react-router-dom";
+import Logo from "../components/Logo";
+import ProfileAvatar from "../components/ProfileAvatar";
 
 export default function CenterPage() {
   const token = localStorage.getItem("cargonaut-token");
@@ -7,27 +9,29 @@ export default function CenterPage() {
   }
 
   return (
-    <main className="center page-center">
-      <section className="center__panel">
-        <div className="center__avatar" aria-label="Profilepicture">
-          <span>Profilepicture</span>
-        </div>
+    <main className="page-center">
+      <div className="stack stack--lg">
+        <Logo alt="Esuap" size={180} />
 
-        <div className="center__actions">
-          <button type="button" className="btn center__action">
-            Fahrer
-          </button>
-          <button type="button" className="btn btn--ghost center__action">
-            Mitfahrer
-          </button>
-        </div>
+        <section className="center__panel stack stack--xxl">
+          <ProfileAvatar className="center__avatar" fallbackText="Profilbild" label="Profilbild" />
 
-        <footer className="page__footer page__footer--sm">
-          <Link to="/impressum" className="page__footer-link">
-            Impressum
-          </Link>
-        </footer>
-      </section>
+          <div className="stack stack--md">
+            <Link to="/driver-menu" className="btn btn--block">
+              Fahrer
+            </Link>
+            <Link to="/passenger-menu" className="btn btn--ghost btn--block">
+              Mitfahrer
+            </Link>
+          </div>
+
+          <footer className="page__footer page__footer--sm">
+            <Link to="/impressum" className="page__footer-link">
+              Impressum
+            </Link>
+          </footer>
+        </section>
+      </div>
     </main>
   );
 }

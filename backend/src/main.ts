@@ -7,6 +7,7 @@ import { join } from 'path';
 import { ValidationPipe } from '@nestjs/common';
 import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
+import { mkdir } from 'fs/promises';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -49,6 +50,10 @@ async function bootstrap() {
   // 📁 MULTIPART HANDLING (für Uploads)
   // ---------------------------------------------------
   await app.register(multipart);
+
+  await mkdir(join(process.cwd(), 'uploads/profile'), { recursive: true });
+  await mkdir(join(process.cwd(), 'uploads/vehicle'), { recursive: true });
+  await mkdir(join(process.cwd(), 'uploads/trips'), { recursive: true });
 
   // ---------------------------------------------------
   // 📁 STATIC FILE SERVING (Uploads)

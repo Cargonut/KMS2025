@@ -22,8 +22,11 @@ This project follows a small, consistent subset of https://cssguidelin.es/ to ke
 Imports are wired in `frontend/src/main.tsx` in a stable order.
 
 ## Utilities and shared patterns
-- Layout helpers: `.page-center`, `.page-stack`, `.stack`, `.grid`, `.grid--two`.
+- Layout helpers: `.page-center`, `.page-stack`, `.stack`, `.stack--xs`, `.stack--sm`, `.stack--md`, `.stack--lg`, `.stack--xl`, `.stack--xxl`, `.stack--stretch`, `.grid`, `.grid--two`.
 - Shared page bits: `.page__content`, `.page__footer`, `.page__footer-link`, `.page__footer--sm`, `.page__footer--xs`, `.page__footer--spaced`, `.page__footer--inverse`.
+- Button helpers: `.btn--block`.
+- Form helpers: `.field--tight`.
+- Avatar helpers: `.avatar-image`.
 - Text helpers: `.heading`, `.heading--xl`, `.muted`, `.eyebrow`.
 
 ## Do / Don't

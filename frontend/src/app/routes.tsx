@@ -5,6 +5,8 @@ import SignUpPage from "../pages/SignUpPage";
 import ImpressumPage from "../pages/ImpressumPage";
 import AuthPage from "../pages/AuthPage";
 import CenterPage from "../pages/CenterPage";
+import DriverMenuPage from "../pages/DriverMenuPage";
+import PassengerMenuPage from "../pages/PassengerMenuPage";
 import ProfilePage from "../pages/ProfilePage";
 
 export const routes: RouteObject[] = [
@@ -14,5 +16,7 @@ export const routes: RouteObject[] = [
   { path: "/impressum", element: <ImpressumPage /> },
   { path: "/auth", element: <AuthPage /> },
   { path: "/center", element: <CenterPage /> },
+  { path: "/driver-menu", element: <DriverMenuPage /> },
+  { path: "/passenger-menu", element: <PassengerMenuPage /> },
   { path: "/profile", element: <ProfilePage /> },
 ];

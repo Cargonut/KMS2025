@@ -8,10 +8,11 @@
    3. Center page
    4. Landing page
    5. Login page
-   6. Signup page
-   7. Impressum page
-   8. Profile page
-   9. Profile shortcut
+   6. Driver menu page
+   7. Passenger menu page
+   8. Signup page
+   9. Impressum page
+   10. Profile shortcut
    ========================================================================== */
 
 /* 1. Layout helpers */
@@ -83,10 +84,7 @@
 
 /* 3. Center page */
 .center__panel {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
   width: 100%;
   max-width: 420px;
   padding: 2.25rem 2rem;
@@ -109,22 +107,8 @@
   letter-spacing: 0.04em;
 }
 
-.center__actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  width: 100%;
-}
-
-.center__action {
-  width: 100%;
-}
-
 /* 4. Landing page */
 .landing__content {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
   width: 100%;
   max-width: 420px;
   text-align: center;
@@ -139,9 +123,6 @@
 }
 
 .landing__actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
   margin-top: 1rem;
 }
 
@@ -173,16 +154,7 @@
   background: rgba(51, 78, 79, 0.6);
 }
 
-.login__form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .login__field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
   color: inherit;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -224,7 +196,162 @@
   bottom: 1rem;
 }
 
-/* 6. Signup page */
+/* 6. Driver menu page */
+.driver-menu__panel,
+.passenger-menu__panel {
+  width: 100%;
+  max-width: 320px;
+  padding: 1.1rem 1rem;
+  border-radius: 18px;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.25);
+}
+
+.driver-menu__panel {
+  background: var(--color-green);
+}
+
+.passenger-menu__panel {
+  background: var(--color-blue);
+}
+
+.driver-menu__card,
+.passenger-menu__card {
+  align-items: center;
+  padding: 1.25rem 1.1rem 1.5rem;
+  border-radius: 16px;
+  background: #d7d7d2;
+}
+
+.driver-menu__avatar,
+.passenger-menu__avatar {
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: #515451;
+  color: #f1f1ed;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.driver-menu__avatar-text,
+.passenger-menu__avatar-text {
+  text-align: center;
+}
+
+.driver-menu__offer,
+.passenger-menu__offer {
+  align-items: stretch;
+  width: 100%;
+  text-align: left;
+}
+
+.driver-menu__offer-title,
+.passenger-menu__offer-title {
+  margin: 0;
+  color: var(--color-dark-blue);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
+.driver-menu__offer-divider,
+.passenger-menu__offer-divider {
+  display: block;
+  width: 100%;
+  height: 2px;
+  border-radius: 999px;
+  background: #6e7f7a;
+}
+
+.driver-menu__field-label,
+.passenger-menu__field-label {
+  margin: 0;
+  color: var(--color-dark-blue);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.driver-menu__field-box,
+.passenger-menu__field-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 6px;
+  background: #8b9491;
+  color: #f0f4f3;
+  text-align: center;
+}
+
+.driver-menu__field-text,
+.passenger-menu__field-text {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.driver-menu__cta,
+.passenger-menu__cta {
+  align-self: center;
+  margin-top: 0.25rem;
+  padding: 0.55rem 1.2rem;
+  border: none;
+  border-radius: 12px;
+  background: #3c4f47;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  color: var(--color-white);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.driver-menu__link,
+.passenger-menu__link {
+  border: none;
+  background: transparent;
+  color: var(--color-dark-blue);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+/* 7. Passenger menu page */
+.passenger-menu__title {
+  margin: 0;
+  color: #e2f0f0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.passenger-menu__date {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.passenger-menu__date-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.35rem;
+  border-radius: 5px;
+  background: #8b9491;
+  color: #f0f4f3;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* 8. Signup page */
 .signup {
   display: grid;
   place-items: center;
@@ -234,11 +361,8 @@
   --content-max: 680px;
 }
 
-/* 7. Impressum page */
+/* 9. Impressum page */
 .impressum__details {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
   line-height: 1.6;
 }
 
@@ -252,14 +376,7 @@
   justify-content: center;
 }
 
-/* 8. Profile page */
-.profile-page__content {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-/* 9. Profile shortcut */
+/* 10. Profile shortcut */
 .profile-shortcut {
   position: fixed;
   top: 1.25rem;
@@ -287,7 +404,7 @@
 .profile-shortcut__image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .profile-shortcut__fallback {

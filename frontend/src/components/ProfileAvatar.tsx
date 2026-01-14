@@ -1,18 +1,28 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
 import { fetchProfile, Profile } from "../app/api";
 
 const storageKey = "cargonaut-token";
 
-export default function ProfileShortcut() {
-  const location = useLocation();
+type ProfileAvatarProps = {
+  className?: string;
+  imageClassName?: string;
+  fallbackClassName?: string;
+  fallbackText?: string;
+  label?: string;
+};
+
+export default function ProfileAvatar({
+  className,
+  imageClassName = "avatar-image",
+  fallbackClassName,
+  fallbackText,
+  label = "Profilbild",
+}: ProfileAvatarProps) {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [token, setToken] = useState<string | null>(null);
 
   const loadProfile = useCallback(() => {
     let active = true;
     const stored = localStorage.getItem(storageKey);
-    setToken(stored);
     if (!stored) {
       setProfile(null);
       return () => {
@@ -31,35 +41,34 @@ export default function ProfileShortcut() {
     };
   }, []);
 
-  useEffect(() => loadProfile(), [loadProfile, location.key]);
+  useEffect(() => loadProfile(), [loadProfile]);
 
   useEffect(() => {
-    const handleAuthChange = () => loadProfile();
-    window.addEventListener("auth-changed", handleAuthChange);
-    window.addEventListener("profile-updated", handleAuthChange);
+    const handleProfileChange = () => loadProfile();
+    window.addEventListener("auth-changed", handleProfileChange);
+    window.addEventListener("profile-updated", handleProfileChange);
     return () => {
-      window.removeEventListener("auth-changed", handleAuthChange);
-      window.removeEventListener("profile-updated", handleAuthChange);
+      window.removeEventListener("auth-changed", handleProfileChange);
+      window.removeEventListener("profile-updated", handleProfileChange);
     };
   }, [loadProfile]);
 
   const fallback = useMemo(() => {
+    if (fallbackText) return fallbackText;
     if (!profile) return "Profil";
     const first = profile.first_name?.[0] ?? "";
     const last = profile.last_name?.[0] ?? "";
     const initials = `${first}${last}`.trim();
     return initials || "Profil";
-  }, [profile]);
-
-  if (!token) return null;
+  }, [fallbackText, profile]);
 
   return (
-    <Link to="/profile" className="profile-shortcut" aria-label="Zum Profil">
+    <div className={className} aria-label={label}>
       {profile?.profile_image ? (
-        <img className="profile-shortcut__image" src={profile.profile_image} alt="Profilbild" />
+        <img className={imageClassName} src={profile.profile_image} alt={label} />
       ) : (
-        <span className="profile-shortcut__fallback">{fallback}</span>
+        <span className={fallbackClassName}>{fallback}</span>
       )}
-    </Link>
+    </div>
   );
 }

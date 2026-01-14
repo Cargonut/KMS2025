@@ -9,8 +9,8 @@ import Logo from "../components/Logo";
 
 export default function LandingPage() {
   return (
-    <main className="landing page-center">
-      <section className="landing__content">
+    <main className="page-center">
+      <section className="landing__content stack stack--xl">
         <header>
           <Logo alt="Esuap" />
           <p className="landing__subtitle">
@@ -18,7 +18,7 @@ export default function LandingPage() {
           </p>
         </header>
 
-        <nav className="landing__actions">
+        <nav className="landing__actions stack stack--md">
           <Link to="/login" className="btn">
             LOGIN
           </Link>

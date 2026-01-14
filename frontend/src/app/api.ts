@@ -209,3 +209,20 @@ export async function uploadVehicleImage(file: File): Promise<string> {
     const payload: { url: string } = await response.json();
     return `${API_BASE_URL}${payload.url}`;
 }
+
+export async function uploadProfileImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch(`${API_BASE_URL}/upload/profile`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        throw new Error('Upload fehlgeschlagen.');
+    }
+
+    const payload: { url: string } = await response.json();
+    return `${API_BASE_URL}${payload.url}`;
+}
