@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: "KoHo", system-ui, sans-serif;
   line-height: 1.5;
   font-weight: 400;
   color: #0f172a;
@@ -12,6 +12,7 @@
   --colorRed: #B83334;
   --colorWhite: #f0f5f5;
 }
+
 
 * {
   box-sizing: border-box;
@@ -166,7 +167,7 @@ h1 {
   padding: 0.75rem 1rem;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(120deg, #0284c7, #0ea5e9);
+  background: var(--colorDarkblue);
   color: var(--colorWhite);
   font-weight: 700;
   cursor: pointer;
@@ -175,7 +176,7 @@ h1 {
 
 .btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 25px rgba(14, 165, 233, 0.25);
+  box-shadow: 0 10px 25px var(--colorWhite);
 }
 
 .btn:disabled {

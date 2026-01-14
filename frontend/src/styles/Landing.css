@@ -20,6 +20,7 @@
 .landing__subtitle {
   opacity: 0.8;
   margin: 0.25rem 0 0;
+  color: var(--colorWhite);
 }
 
 .landing__actions {
