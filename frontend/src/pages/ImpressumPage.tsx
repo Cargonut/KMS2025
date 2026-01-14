@@ -2,7 +2,6 @@
 // Logo
 // Schriftzug - Impressum
 
-
 import { Link } from "react-router-dom";
 
 export default function ImpressumPage() {
@@ -39,9 +38,7 @@ export default function ImpressumPage() {
             12345 Köthen
           </p>
 
-          <p>
-            E-Mail: kontakt@esuap.de
-          </p>
+          <p>E-Mail: kontakt@esuap.de</p>
 
           <p>
             Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:
@@ -59,4 +56,3 @@ export default function ImpressumPage() {
     </main>
   );
 }
-

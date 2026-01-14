@@ -52,7 +52,7 @@ export default function SignupForm({ onSubmit, busy, message }: SignupFormProps)
                         onChange={handleChange}
                     />
                     <Field
-                        label="E-Mail bestÇÏtigen"
+                        label="E-Mail bestätigen"
                         name="emailConfirm"
                         type="email"
                         required
@@ -82,7 +82,7 @@ export default function SignupForm({ onSubmit, busy, message }: SignupFormProps)
                         name="phone"
                         value={form.phone || ''}
                         onChange={handleChange}
-                        placeholder="optional, spÇÏter verpflichtend fÇ¬r Angebote"
+                        placeholder="optional, später verpflichtend für Angebote"
                     />
                     <Field
                         label="Profilbild-URL"
@@ -99,7 +99,7 @@ export default function SignupForm({ onSubmit, busy, message }: SignupFormProps)
                         value={form.additional_note || ''}
                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                         rows={3}
-                        placeholder="Hinweise fÇ¬r Mitfahrer*innen"
+                        placeholder="Hinweise für Mitfahrer*innen"
                     />
                 </label>
                 <MessageBox tone={message?.tone}>{message?.text}</MessageBox>

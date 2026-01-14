@@ -6,6 +6,7 @@ type FieldProps = {
     value: string;
     onChange: (name: string, value: string) => void;
     placeholder?: string;
+    className?: string;
 };
 
 export default function Field({
@@ -16,9 +17,12 @@ export default function Field({
     value,
     onChange,
     placeholder,
+    className,
 }: FieldProps) {
+    const labelClassName = className ? `field ${className}` : 'field';
+
     return (
-        <label className="field">
+        <label className={labelClassName}>
             <span>{label}</span>
             <input
                 name={name}

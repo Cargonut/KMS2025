@@ -1,17 +1,14 @@
-import { FormEvent, ReactNode, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { loginUser } from "../app/api";
+import Field from "../components/ui/Field";
+import MessageBox, { MessageTone } from "../components/ui/MessageBox";
 import "../styles/Login.css";
 import Logo from "../components/Logo";
 
 const storageKey = "cargonaut-token";
 
-type Message = { tone: "info" | "success" | "error" | "warn"; text: string };
-
-function MessageBox({ tone = "info", children }: { tone?: Message["tone"]; children?: ReactNode }) {
-  if (!children) return null;
-  return <div className={`message message--${tone}`}>{children}</div>;
-}
+type Message = { tone: MessageTone; text: string };
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -38,33 +35,33 @@ export default function LoginPage() {
 
   return (
     <main className="login">
-    <Logo alt="Esuap" />
+      <Logo alt="Esuap" />
       <div className="login__card">
         <h1 className="login__title koho-bold">LOGIN</h1>
         <div className="login__divider" />
 
         <form className="login__form" onSubmit={submit}>
-          <label className="login__field">
-            <span>EMAIL</span>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@esuap.com"
-            />
-          </label>
+          <Field
+            className="login__field"
+            label="EMAIL"
+            name="email"
+            type="email"
+            required
+            value={email}
+            onChange={(_name, value) => setEmail(value)}
+            placeholder="admin@esuap.com"
+          />
 
-          <label className="login__field">
-            <span>PASSWORD</span>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="************"
-            />
-          </label>
+          <Field
+            className="login__field"
+            label="PASSWORD"
+            name="password"
+            type="password"
+            required
+            value={password}
+            onChange={(_name, value) => setPassword(value)}
+            placeholder="************"
+          />
 
           <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
 

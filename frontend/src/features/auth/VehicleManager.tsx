@@ -78,7 +78,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
             const loadArea = Number(form.load_area);
             const weight = form.weight ? Number(form.weight) : undefined;
             if (!form.name || Number.isNaN(loadArea) || loadArea <= 0) {
-                throw new Error('Bitte Name und LadeflÇÏche angeben.');
+                throw new Error('Bitte Name und Ladefläche angeben.');
             }
             await createVehicle(
                 {
@@ -125,7 +125,7 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                 <Field label="Fahrzeugname" name="name" required value={form.name} onChange={handleChange} />
                 <div className="grid two">
                     <label className="field">
-                        <span>LadeflÇÏche (m¶ý)</span>
+                        <span>Ladefläche (m²)</span>
                         <input
                             name="load_area"
                             type="number"
@@ -179,13 +179,13 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                         value={form.special_features || ''}
                         onChange={(e) => handleChange(e.target.name, e.target.value)}
                         rows={3}
-                        placeholder="z. B. Gurte, Rampe, KÇ¬hlung"
+                        placeholder="z. B. Gurte, Rampe, Kühlung"
                     />
                 </label>
                 <label className="field">
                     <span>Fahrzeugbilder hochladen</span>
                     <input type="file" accept="image/*" multiple onChange={(e) => handleUpload(e.target.files)} />
-                    {uploading && <span className="muted">Upload lÇÏuft...</span>}
+                    {uploading && <span className="muted">Upload läuft...</span>}
                 </label>
                 {form.image_urls && form.image_urls.length > 0 && (
                     <div className="vehicle__images">
@@ -221,13 +221,13 @@ export default function VehicleManager({ token, vehicles, onRefresh }: VehicleMa
                                             onClick={() => handleDelete(vehicle.id)}
                                             disabled={busy}
                                         >
-                                            LÇôschen
+                                            Löschen
                                         </button>
                                     ) : null}
                                 </div>
-                                <p className="muted">LadeflÇÏche: {vehicle.load_area ?? 'ƒ?"'} m¶ý</p>
+                                <p className="muted">Ladefläche: {vehicle.load_area ?? 'k.A.'} m²</p>
                                 <p className="muted">
-                                    Motor: {vehicle.motor_type ? motorLabels[vehicle.motor_type] : 'ƒ?"'}
+                                    Motor: {vehicle.motor_type ? motorLabels[vehicle.motor_type] : 'k.A.'}
                                 </p>
                                 {vehicle.special_features && <p>{vehicle.special_features}</p>}
                                 {vehicle.image_urls && vehicle.image_urls.length > 0 && (

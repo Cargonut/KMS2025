@@ -20,11 +20,11 @@ export default function LandingPage() {
         </header>
 
         <nav className="landing__actions">
-          <Link to="/auth" className="btn">
+          <Link to="/login" className="btn">
             LOGIN
           </Link>
 
-          <Link to="/auth" className="btn secondary">
+          <Link to="/signup" className="btn secondary">
             SIGN UP
           </Link>
         </nav>

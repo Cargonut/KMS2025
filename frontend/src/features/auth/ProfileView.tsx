@@ -40,11 +40,11 @@ export default function ProfileView({ profile, refresh }: ProfileViewProps) {
                         </div>
                         <div>
                             <dt>Nachname</dt>
-                            <dd>{profile.last_name ? `${profile.last_name[0]}.` : 'ƒ?"'}</dd>
+                            <dd>{profile.last_name ? `${profile.last_name[0]}.` : 'k.A.'}</dd>
                         </div>
                         <div>
                             <dt>Alter</dt>
-                            <dd>{age ?? 'ƒ?"'}</dd>
+                            <dd>{age ?? 'k.A.'}</dd>
                         </div>
                         <div>
                             <dt>E-Mail</dt>
@@ -56,12 +56,12 @@ export default function ProfileView({ profile, refresh }: ProfileViewProps) {
                         </div>
                         <div>
                             <dt>Notiz</dt>
-                            <dd>{profile.additional_note || 'ƒ?"'}</dd>
+                            <dd>{profile.additional_note || 'k.A.'}</dd>
                         </div>
                     </dl>
                 </div>
             )}
-            {missing && <MessageBox tone="warn">FÇ¬r Angebote fehlen noch: {missing}</MessageBox>}
+            {missing && <MessageBox tone="warn">Für Angebote fehlen noch: {missing}</MessageBox>}
         </Card>
     );
 }

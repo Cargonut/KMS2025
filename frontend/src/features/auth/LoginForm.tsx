@@ -43,7 +43,7 @@ export default function LoginForm({ onSubmit, busy, message }: LoginFormProps) {
                 />
                 <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
                 <button type="submit" className="btn" disabled={busy}>
-                    {busy ? 'Wird geprÇ¬ft...' : 'Einloggen'}
+                    {busy ? 'Wird geprüft...' : 'Einloggen'}
                 </button>
             </form>
         </Card>

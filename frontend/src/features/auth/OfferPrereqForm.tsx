@@ -39,7 +39,7 @@ export default function OfferPrereqForm({ profile, onSubmit, busy, message }: Of
     };
 
     return (
-        <Card title="Pflichtangaben fÇ¬r Angebote">
+        <Card title="Pflichtangaben für Angebote">
             <form className="stack" onSubmit={submit}>
                 <Field
                     label="Handynummer (intern)"
@@ -67,7 +67,7 @@ export default function OfferPrereqForm({ profile, onSubmit, busy, message }: Of
                 </label>
                 <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
                 <button type="submit" className="btn" disabled={busy}>
-                    {busy ? 'Speichern...' : 'Speichern & Angebot erstellen kÇônnen'}
+                    {busy ? 'Speichern...' : 'Speichern & Angebot erstellen können'}
                 </button>
             </form>
         </Card>

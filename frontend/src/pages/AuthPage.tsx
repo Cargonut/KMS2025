@@ -51,7 +51,7 @@ export default function AuthPage() {
         setBusy(true);
         try {
             if (form.email !== form.emailConfirm) {
-                throw new Error('E-Mail und BestÇÏtigung stimmen nicht Ç¬berein.');
+                throw new Error('E-Mail und Bestätigung stimmen nicht überein.');
             }
             const age = calculateAge(form.birth_date);
             if (age === null || age < 18) {
@@ -108,7 +108,7 @@ export default function AuthPage() {
         try {
             const updated = await updateProfile(data, token);
             setProfile(updated);
-            setUpdateMessage({ tone: 'success', text: 'Daten gespeichert. Angebote kÇônnen erstellt werden.' });
+            setUpdateMessage({ tone: 'success', text: 'Daten gespeichert. Angebote können erstellt werden.' });
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Unbekannter Fehler';
             setUpdateMessage({ tone: 'error', text: message });

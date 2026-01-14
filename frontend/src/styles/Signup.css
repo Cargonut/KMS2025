@@ -1,0 +1,43 @@
+.signup {
+  min-height: 100vh;
+  padding: 3rem 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.signup__header {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.signup__header .session {
+  justify-content: center;
+}
+
+.signup__logo {
+  margin-bottom: 0.5rem;
+}
+
+.signup__content {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.signup__footer {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.signup__footer a {
+  text-decoration: none;
+  opacity: 0.8;
+}
+
+.signup__footer a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}

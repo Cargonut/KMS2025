@@ -44,14 +44,3 @@
   text-decoration: underline;
 }
 
-.landing__logo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.landing__logo img {
-  max-width: 220px;   /* anpassen nach Geschmack */
-  width: 100%;
-  height: auto;
-}
