@@ -6,7 +6,7 @@ import ImpressumPage from "../pages/ImpressumPage";
 import AuthPage from "../pages/AuthPage";
 
 export const routes: RouteObject[] = [
-  { path: "/landing", element: <LandingPage /> },
+  { path: "*", element: <LandingPage /> },
   //{ path: "/login", element: <LoginPage /> },
   //{ path: "/signup", element: <SignUpPage /> },
   { path: "/impressum", element: <ImpressumPage /> },

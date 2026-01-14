@@ -3,11 +3,6 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-  --colorGreen: #7dac56;
-  --colorBlue: #2f6b71;
-  --colorDarkblue: #334e4f;
-  --colorRed: #B83334;
-  --colorWhite: #f0f5f5;
 }
 
 .logo {
@@ -45,3 +40,5 @@
 .read-the-docs {
   color: #888;
 }
+
+

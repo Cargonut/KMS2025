@@ -1,0 +1,56 @@
+/* Landing */
+.landing {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: var(--bg);
+  color: var(--text);
+  padding: 2rem;
+}
+
+.landing__content {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.landing__subtitle {
+  opacity: 0.8;
+  margin: 0.25rem 0 0;
+}
+
+.landing__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.landing__footer {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+}
+
+.landing__impressum {
+  opacity: 0.75;
+  text-decoration: none;
+}
+.landing__impressum:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.landing__logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.landing__logo img {
+  max-width: 220px;   /* anpassen nach Geschmack */
+  width: 100%;
+  height: auto;
+}

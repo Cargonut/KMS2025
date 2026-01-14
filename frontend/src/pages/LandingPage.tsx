@@ -5,46 +5,25 @@
 // Schriftzug - Impressum
 
 import { Link } from "react-router-dom";
+import "../styles/Landing.css";
+import "../styles/Landing.css";
+import logo from "../assets/LOGO.png";
+
 
 export default function LandingPage() {
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "grid",
-        placeItems: "center",
-        background: "#111214",
-        color: "#fff",
-        padding: "2rem",
-      }}
-    >
-      <section
-        style={{
-          width: "100%",
-          maxWidth: 420,
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          gap: "1.25rem",
-        }}
-      >
-        {/* Logo / Titel */}
+    <main className="landing">
+      <section className="landing__content">
         <header>
-          <h1 style={{ margin: 0 }}>MyCargonaut</h1>
-          <p style={{ opacity: 0.8 }}>
+          <div className="landing__logo">
+            <img src={logo} alt="Esuap" />
+          </div>
+          <p className="landing__subtitle">
             Mitfahrgelegenheiten für Cargo & Menschen
           </p>
         </header>
 
-        {/* Aktionen */}
-        <nav
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.75rem",
-            marginTop: "1rem",
-          }}
-        >
+        <nav className="landing__actions">
           <Link to="/auth" className="btn">
             LOGIN
           </Link>
@@ -54,9 +33,8 @@ export default function LandingPage() {
           </Link>
         </nav>
 
-        {/* Footer */}
-        <footer style={{ marginTop: "2rem", fontSize: "0.85rem" }}>
-          <Link to="/impressum" style={{ opacity: 0.75 }}>
+        <footer className="landing__footer">
+          <Link to="/impressum" className="landing__impressum">
             Impressum
           </Link>
         </footer>
@@ -64,4 +42,3 @@ export default function LandingPage() {
     </main>
   );
 }
-
