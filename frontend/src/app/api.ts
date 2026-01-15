@@ -14,6 +14,8 @@ export type Profile = {
 
 export type MotorType = 'benzin' | 'diesel' | 'hybrid' | 'elektro' | 'gas' | 'sonstiges';
 
+export type TripType = 'angebot' | 'gesuch';
+
 export type Vehicle = {
     id: number;
     name?: string | null;
@@ -23,6 +25,18 @@ export type Vehicle = {
     load_area?: number | null;
     motor_type?: MotorType | null;
     image_urls?: string[];
+};
+
+export type Trip = {
+    id: number;
+    type: TripType;
+    from_location: string;
+    to_location: string;
+    start_date: string;
+    end_date?: string | null;
+    vehicle_id?: number | null;
+    is_active: boolean;
+    restrictions?: string | null;
 };
 
 export function calculateAge(dateString: string | null | undefined): number | null {
@@ -142,6 +156,19 @@ export type CreateVehicleInput = {
     image_urls?: string[];
 };
 
+export type CreateTripInput = {
+    type: TripType;
+    from_location: string;
+    to_location: string;
+    start_date: string;
+    end_date?: string | null;
+    vehicle_id?: number | null;
+    weight?: number | null;
+    seats?: number | null;
+    price?: number | null;
+    restrictions?: string | null;
+};
+
 export async function fetchMyVehicles(token: string): Promise<Vehicle[]> {
     const result = await graphqlRequest<{ myVehicles: Vehicle[] }>(
         `query MyVehicles {
@@ -225,4 +252,25 @@ export async function uploadProfileImage(file: File): Promise<string> {
 
     const payload: { url: string } = await response.json();
     return `${API_BASE_URL}${payload.url}`;
+}
+
+export async function createTrip(data: CreateTripInput, token: string): Promise<Trip> {
+    const result = await graphqlRequest<{ createTrip: Trip }>(
+        `mutation CreateTrip($data: CreateTripInput!) {
+      createTrip(data: $data) {
+        id
+        type
+        from_location
+        to_location
+        start_date
+        end_date
+        vehicle_id
+        is_active
+        restrictions
+      }
+    }`,
+        { data },
+        token,
+    );
+    return result.createTrip;
 }
