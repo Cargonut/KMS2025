@@ -156,6 +156,16 @@ export type CreateVehicleInput = {
     image_urls?: string[];
 };
 
+export type UpdateVehicleInput = {
+    name?: string;
+    load_area?: number | null;
+    motor_type?: MotorType | null;
+    special_features?: string | null;
+    weight?: number | null;
+    dimensions?: string | null;
+    image_urls?: string[] | null;
+};
+
 export type CreateTripInput = {
     type: TripType;
     from_location: string;
@@ -170,43 +180,55 @@ export type CreateTripInput = {
 };
 
 export async function fetchMyVehicles(token: string): Promise<Vehicle[]> {
-    const result = await graphqlRequest<{ myVehicles: Vehicle[] }>(
-        `query MyVehicles {
-      myVehicles {
-        id
-        name
-        load_area
-        motor_type
-        image_urls
-        special_features
-        weight
-        dimensions
-      }
-    }`,
-        {},
-        token,
-    );
-    return result.myVehicles;
+    try {
+        const result = await graphqlRequest<{ myVehicles?: Vehicle[] | null }>(
+            `query MyVehicles {
+        myVehicles {
+          id
+          name
+          load_area
+          motor_type
+          image_urls
+          special_features
+          weight
+          dimensions
+        }
+      }`,
+            {},
+            token,
+        );
+        return result.myVehicles ?? [];
+    } catch (err) {
+        const message = err instanceof Error ? err.message : '';
+        if (message.includes('Expected Iterable')) {
+            return [];
+        }
+        throw err;
+    }
 }
 
-export async function createVehicle(data: CreateVehicleInput, token: string): Promise<Vehicle> {
-    const result = await graphqlRequest<{ createVehicle: Vehicle }>(
+export async function createVehicle(data: CreateVehicleInput, token: string): Promise<void> {
+    await graphqlRequest<{ createVehicle: { __typename: string } }>(
         `mutation CreateVehicle($data: CreateVehicleInput!) {
       createVehicle(data: $data) {
-        id
-        name
-        load_area
-        motor_type
-        image_urls
-        special_features
-        weight
-        dimensions
+        __typename
       }
     }`,
         { data },
         token,
     );
-    return result.createVehicle;
+}
+
+export async function updateVehicle(id: number, data: UpdateVehicleInput, token: string): Promise<void> {
+    await graphqlRequest<{ updateVehicle: { __typename: string } }>(
+        `mutation UpdateVehicle($id: Int!, $data: UpdateVehicleInput!) {
+      updateVehicle(id: $id, data: $data) {
+        __typename
+      }
+    }`,
+        { id, data },
+        token,
+    );
 }
 
 export async function deleteVehicle(id: number, token: string): Promise<boolean> {

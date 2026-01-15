@@ -127,6 +127,7 @@ export default function AuthPage() {
             as="div"
             header={{
                 eyebrow: 'MyCargonaut',
+                logo: { alt: 'Esuap', size: 180 },
                 title: 'Registrierung & Login',
                 subtitle: 'Vite + React (TSX) UI gegen das vorhandene GraphQL-Backend.',
                 actions: (

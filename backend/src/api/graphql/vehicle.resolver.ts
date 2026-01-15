@@ -31,9 +31,16 @@ export class VehicleResolver {
   // GET VEHICLES FOR CURRENT USER
   // -------------------------------------------------------
   @UseGuards(GqlAuthGuard)
-  @Query(() => [Vehicle], { name: 'myVehicles' })
+  @Query(() => [Vehicle], { name: 'myVehicles', nullable: 'itemsAndList' })
   async getMyVehicles(@CurrentUser() user: any) {
-    return this.vehicleService.findByUser(user.id);
+    if (!user?.id) {
+      return [];
+    }
+    const vehicles = await this.vehicleService.findByUser(user.id);
+    if (!vehicles) {
+      return [];
+    }
+    return Array.isArray(vehicles) ? vehicles : [vehicles];
   }
 
   // -------------------------------------------------------

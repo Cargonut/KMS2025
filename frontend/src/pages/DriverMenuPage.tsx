@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import Logo from "../components/Logo";
 import ProfileAvatar from "../components/ProfileAvatar";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 
@@ -6,6 +8,7 @@ export default function DriverMenuPage() {
   return (
     <PageLayout variant="center" className="page-theme page-theme--driver">
       <section className="driver-menu__panel stack stack--lg">
+        <Logo alt="Esuap" size={180} className="page__logo" />
         <div className="driver-menu__card stack stack--xl">
           <ProfileAvatar
             className="driver-menu__avatar"
@@ -34,18 +37,18 @@ export default function DriverMenuPage() {
               </div>
             </div>
 
-            <button type="button" className="driver-menu__cta">
+            <Link to="/trip-publication" className="driver-menu__cta">
               ANBIETEN
-            </button>
+            </Link>
           </div>
 
           <div className="stack stack--sm">
             <button type="button" className="driver-menu__link">
               MEINE FAHRTEN
             </button>
-            <button type="button" className="driver-menu__link">
+            <Link to="/vehicles" className="driver-menu__link">
               FAHRZEUGE
-            </button>
+            </Link>
           </div>
         </div>
 

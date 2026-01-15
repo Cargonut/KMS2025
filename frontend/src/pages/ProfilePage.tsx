@@ -241,9 +241,14 @@ export default function ProfilePage() {
         title: "Profil",
         subtitle: "Deine hinterlegten Daten.",
         actions: (
-          <Link to="/center" className="btn btn--ghost">
-            Zur Auswahl
-          </Link>
+          <>
+            <Link to="/vehicles" className="btn btn--ghost">
+              Fahrzeuge
+            </Link>
+            <Link to="/center" className="btn btn--ghost">
+              Zur Auswahl
+            </Link>
+          </>
         ),
       }}
       contentWrap

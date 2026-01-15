@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Logo from "../components/Logo";
 import ProfileAvatar from "../components/ProfileAvatar";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 
@@ -80,6 +81,7 @@ export default function PassengerMenuPage() {
   return (
     <PageLayout variant="center" className="page-theme page-theme--passenger">
       <section className="passenger-menu__panel stack stack--lg">
+        <Logo alt="Esuap" size={180} className="page__logo" />
         <p className="passenger-menu__title">MITFAHRER MENU</p>
 
         <div className="passenger-menu__card stack stack--xl">
