@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import ProfileAvatar from "../components/ProfileAvatar";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 
@@ -12,17 +12,6 @@ type Offer = {
   seats: number;
 };
 
-const ADDRESS_SUGGESTIONS = [
-  "35390 Gießen, Bahnhofstraße 1",
-  "35390 Gießen, Marktplatz",
-  "35578 Wetzlar, Domplatz",
-  "60326 Frankfurt, Hauptbahnhof",
-  "60311 Frankfurt, Römerberg",
-  "60549 Frankfurt, Flughafen",
-  "65183 Wiesbaden, Schlossplatz",
-  "64283 Darmstadt, Luisenplatz",
-  "63067 Offenbach, Marktplatz",
-];
 
 const MOCK_OFFERS: Offer[] = [
   {
@@ -70,32 +59,14 @@ export default function PassengerMenuPage() {
   const [hasSearched, setHasSearched] = useState(false);
   const [results, setResults] = useState<Offer[]>([]);
 
-  const fromSuggestions = useMemo(() => {
-    if (!fromInput) {
-      return [];
-    }
-    return ADDRESS_SUGGESTIONS.filter((address) =>
-      address.toLowerCase().includes(fromInput.toLowerCase()),
-    ).slice(0, 5);
-  }, [fromInput]);
-
-  const toSuggestions = useMemo(() => {
-    if (!toInput) {
-      return [];
-    }
-    return ADDRESS_SUGGESTIONS.filter((address) =>
-      address.toLowerCase().includes(toInput.toLowerCase()),
-    ).slice(0, 5);
-  }, [toInput]);
-
   const handleSearch = () => {
     const filtered = MOCK_OFFERS.filter((offer) => {
       const matchesFrom = fromInput
-        ? offer.from.toLowerCase().includes(fromInput.toLowerCase())
-        : true;
+          ? offer.from.toLowerCase().includes(fromInput.toLowerCase())
+          : true;
       const matchesTo = toInput
-        ? offer.to.toLowerCase().includes(toInput.toLowerCase())
-        : true;
+          ? offer.to.toLowerCase().includes(toInput.toLowerCase())
+          : true;
       const matchesDate = dateInput ? offer.date === dateInput : true;
 
       return matchesFrom && matchesTo && matchesDate;
@@ -104,6 +75,7 @@ export default function PassengerMenuPage() {
     setResults(filtered);
     setHasSearched(true);
   };
+
 
   return (
     <PageLayout variant="center" className="page-theme page-theme--passenger">
@@ -133,21 +105,7 @@ export default function PassengerMenuPage() {
                   onChange={(event) => setFromInput(event.target.value)}
                 />
               </div>
-              {fromSuggestions.length > 0 && (
-                <ul className="passenger-menu__suggestions">
-                  {fromSuggestions.map((address) => (
-                    <li key={address}>
-                      <button
-                        type="button"
-                        className="passenger-menu__suggestion"
-                        onClick={() => setFromInput(address)}
-                      >
-                        {address}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
+
             </div>
 
             <div className="stack stack--xs passenger-menu__field">
@@ -161,21 +119,7 @@ export default function PassengerMenuPage() {
                   onChange={(event) => setToInput(event.target.value)}
                 />
               </div>
-              {toSuggestions.length > 0 && (
-                <ul className="passenger-menu__suggestions">
-                  {toSuggestions.map((address) => (
-                    <li key={address}>
-                      <button
-                        type="button"
-                        className="passenger-menu__suggestion"
-                        onClick={() => setToInput(address)}
-                      >
-                        {address}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
+             
             </div>
 
             <div className="stack stack--xs">
