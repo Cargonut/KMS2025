@@ -299,6 +299,28 @@
   text-align: center;
 }
 
+.driver-menu__input,
+.passenger-menu__input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.driver-menu__input::placeholder,
+.passenger-menu__input::placeholder {
+  color: rgba(240, 244, 243, 0.8);
+}
+
+.driver-menu__input:focus-visible,
+.passenger-menu__input:focus-visible {
+  outline: 2px solid rgba(240, 244, 243, 0.8);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 .driver-menu__field-text,
 .passenger-menu__field-text {
   margin: 0;
@@ -389,6 +411,92 @@
   letter-spacing: 0.04em;
   text-align: left;
   text-transform: uppercase;
+}
+
+.passenger-menu__field {
+  position: relative;
+}
+
+.passenger-menu__suggestions {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  margin: 0.35rem 0 0;
+  padding: 0.35rem;
+  border-radius: 8px;
+  list-style: none;
+  background: rgba(240, 245, 245, 0.96);
+  box-shadow: 0 12px 18px rgba(0, 0, 0, 0.18);
+}
+
+.passenger-menu__suggestion {
+  width: 100%;
+  padding: 0.4rem 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: #2f3e38;
+  font-size: 0.78rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.passenger-menu__suggestion:hover,
+.passenger-menu__suggestion:focus-visible {
+  background: rgba(60, 79, 71, 0.12);
+}
+
+.passenger-menu__results {
+  width: 100%;
+  border-radius: 12px;
+  background: rgba(240, 245, 245, 0.8);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.passenger-menu__results-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #2f3e38;
+}
+
+.passenger-menu__result-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.6rem 0.65rem;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px rgba(60, 79, 71, 0.12);
+}
+
+.passenger-menu__result-route {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1f2a26;
+}
+
+.passenger-menu__result-meta {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #52625d;
+}
+
+.passenger-menu__result-details {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2f3e38;
+}
+
+.passenger-menu__result-empty {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #52625d;
 }
 
 .passenger-menu__date {
