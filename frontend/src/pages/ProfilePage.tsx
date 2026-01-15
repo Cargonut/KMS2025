@@ -1,18 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChangeEvent, PointerEvent } from "react";
-import { Link, Navigate } from "react-router-dom";
-import { fetchProfile, Profile, updateProfile, uploadProfileImage } from "../app/api";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { deleteMe, fetchProfile, Profile, updateProfile, uploadProfileImage } from "../app/api";
 import { PageFooter, PageLayout } from "../components/PageLayout";
-import Card from "../components/ui/Card";
 import MessageBox from "../components/ui/MessageBox";
-import ProfileView from "../features/ProfileView";
 import type { Message } from "../features/types";
+import Logo from "../components/Logo";
 
 const storageKey = "cargonaut-token";
 const previewSize = 140;
 const outputSize = 512;
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const token = localStorage.getItem(storageKey);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +29,10 @@ export default function ProfilePage() {
   const dragStateRef = useRef<{ startX: number; startY: number; originX: number; originY: number } | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteMessage, setDeleteMessage] = useState<Message>();
+  const [deleting, setDeleting] = useState(false);
 
   const loadProfile = useCallback(async () => {
     if (!token) return;
@@ -225,98 +229,231 @@ export default function ProfilePage() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!token) return;
+    setDeleting(true);
+    setDeleteMessage(undefined);
+    try {
+      if (!deletePassword.trim()) {
+        throw new Error("Bitte Passwort eingeben.");
+      }
+      await deleteMe(deletePassword, token);
+      localStorage.removeItem(storageKey);
+      window.dispatchEvent(new Event("auth-changed"));
+      navigate("/", { replace: true });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unbekannter Fehler";
+      setDeleteMessage({ tone: "error", text: message });
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (!token) {
     return <Navigate to="/signup" replace />;
   }
 
   const zoomMax = Math.max(minZoom * 3, minZoom + 0.5);
+  const birthDate = profile?.birth_date ? new Date(profile.birth_date) : null;
+  const isBirthDateValid = birthDate && !Number.isNaN(birthDate.getTime());
+  const birthParts = isBirthDateValid
+    ? {
+        day: String(birthDate.getDate()).padStart(2, "0"),
+        month: ["JAN", "FEB", "MAER", "APR", "MAI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEZ"][
+          birthDate.getMonth()
+        ],
+        year: String(birthDate.getFullYear()),
+      }
+    : { day: "--", month: "---", year: "----" };
 
-  // Profilseite bleibt funktional gleich, Rahmen kommt aus dem Template.
   return (
-    <PageLayout
-      variant="stack"
-      header={{
-        align: "center",
-        logo: { alt: "Esuap", size: 180 },
-        title: "Profil",
-        subtitle: "Deine hinterlegten Daten.",
-        actions: (
-          <>
-            <Link to="/vehicles" className="btn btn--ghost">
-              Fahrzeuge
-            </Link>
-            <Link to="/center" className="btn btn--ghost">
-              Zur Auswahl
-            </Link>
-          </>
-        ),
-      }}
-      contentWrap
-      contentClassName="stack stack--lg"
-      footer={<PageFooter className="page__footer--sm" />}
-    >
-      {error && <MessageBox tone="error">{error}</MessageBox>}
-      {busy && !profile && <p className="muted">Lade Profil...</p>}
-      <Card title="Profilbild aktualisieren">
-        <div className="stack stack--sm">
-          <label className="field">
-            <span>Bilddatei auswaehlen</span>
+    <PageLayout variant="center">
+      <section className="profile-page__panel stack stack--lg">
+        <Logo alt="Esuap" size={180} className="page__logo" />
+
+        <div className="profile-page__card stack stack--md">
+          <div className="profile-page__avatar">
+            <button
+              type="button"
+              className="profile-page__avatar-button"
+              onClick={() => fileInputRef.current?.click()}
+              aria-label="Profilbild aendern"
+              disabled={uploading}
+            >
+              {profile?.profile_image ? (
+                <img src={profile.profile_image} alt="Profilbild" />
+              ) : (
+                <span>Profilbild</span>
+              )}
+            </button>
             <input
               ref={fileInputRef}
-              className="field__control"
+              className="profile-page__file-input"
               type="file"
               accept="image/*"
               onChange={handleFileChange}
               disabled={uploading}
             />
-          </label>
-          <p className="muted">
-            {selectedFile ? `Ausgewaehlt: ${selectedFile.name}` : "Noch keine Datei ausgewaehlt."}
-          </p>
-          {previewUrl && imageSize && (
-            <div className="image-preview">
-              <span className="muted">Vorschau</span>
-              <div
-                className={`image-preview__frame${dragging ? " image-preview__frame--dragging" : ""}`}
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                onPointerCancel={handlePointerUp}
-              >
-                <img
-                  className="image-preview__image"
-                  src={previewUrl}
-                  alt="Profilbild Vorschau"
-                  style={{
-                    width: imageSize.width * zoom,
-                    height: imageSize.height * zoom,
-                    transform: `translate(${offset.x}px, ${offset.y}px)`,
-                  }}
-                />
+          </div>
+
+          <div className="profile-page__header">
+            <p className="profile-page__title">PROFIL</p>
+            <span className="profile-page__divider" aria-hidden="true" />
+          </div>
+
+          {error && <MessageBox tone="error">{error}</MessageBox>}
+          {busy && !profile && <p className="profile-page__hint">Lade Profil...</p>}
+
+          <div className="profile-page__grid profile-page__grid--two">
+            <div className="profile-page__field">
+              <span className="profile-page__label">VORNAME</span>
+              <div className="profile-page__value">{profile?.first_name || "-"}</div>
+            </div>
+            <div className="profile-page__field">
+              <span className="profile-page__label">NAME</span>
+              <div className="profile-page__value">{profile?.last_name || "-"}</div>
+            </div>
+            <div className="profile-page__field profile-page__field--full">
+              <span className="profile-page__label">EMAIL</span>
+              <div className="profile-page__value">{profile?.email || "-"}</div>
+            </div>
+            <div className="profile-page__field profile-page__field--full">
+              <span className="profile-page__label">GEB. DATUM</span>
+              <div className="profile-page__date">
+                <div className="profile-page__value profile-page__value--tight">{birthParts.day}</div>
+                <div className="profile-page__value profile-page__value--tight">{birthParts.month}</div>
+                <div className="profile-page__value profile-page__value--tight">{birthParts.year}</div>
               </div>
-              <span className="muted image-preview__hint">Ziehen, um den Ausschnitt zu verschieben.</span>
-              <label className="field field--tight">
-                <span>Zoom</span>
-                <input
-                  className="field__control image-preview__range"
-                  type="range"
-                  min={minZoom}
-                  max={zoomMax}
-                  step={0.01}
-                  value={zoom}
-                  onChange={handleZoomChange}
-                  disabled={!imageSize}
-                />
-              </label>
+            </div>
+            <div className="profile-page__field profile-page__field--full">
+              <span className="profile-page__label">PASSWORT</span>
+              <div className="profile-page__value">************</div>
+            </div>
+            <div className="profile-page__field profile-page__field--full">
+              <span className="profile-page__label">PASSWORT WIEDERHOLEN</span>
+              <div className="profile-page__value">************</div>
+            </div>
+          </div>
+
+          <div className="profile-page__vehicles">
+            <Link to="/vehicles" className="profile-page__section-link">
+              FAHRZEUGE
+            </Link>
+            <div className="profile-page__actions">
+              <button
+                type="button"
+                className="profile-page__action"
+                aria-label="Account loeschen"
+                onClick={() => {
+                  setDeletePassword("");
+                  setDeleteMessage(undefined);
+                  setDeleteOpen(true);
+                }}
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M9 3h6l1 2h5v2H3V5h5l1-2zm1 6h2v9h-2V9zm4 0h2v9h-2V9z"
+                    fill="currentColor"
+                  />
+                  <path d="M6 9h2v9H6V9z" fill="currentColor" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {previewUrl && imageSize && (
+            <div className="profile-page__upload stack stack--sm">
+              <div className="image-preview">
+                <span className="profile-page__hint">Bild zuschneiden</span>
+                <div
+                  className={`image-preview__frame${dragging ? " image-preview__frame--dragging" : ""}`}
+                  onPointerDown={handlePointerDown}
+                  onPointerMove={handlePointerMove}
+                  onPointerUp={handlePointerUp}
+                  onPointerCancel={handlePointerUp}
+                >
+                  <img
+                    className="image-preview__image"
+                    src={previewUrl}
+                    alt="Profilbild Vorschau"
+                    style={{
+                      width: imageSize.width * zoom,
+                      height: imageSize.height * zoom,
+                      transform: `translate(${offset.x}px, ${offset.y}px)`,
+                    }}
+                  />
+                </div>
+                <label className="profile-page__field">
+                  <span className="profile-page__label">ZOOM</span>
+                  <input
+                    className="profile-page__range"
+                    type="range"
+                    min={minZoom}
+                    max={zoomMax}
+                    step={0.01}
+                    value={zoom}
+                    onChange={handleZoomChange}
+                    disabled={!imageSize}
+                  />
+                </label>
+              </div>
+              <MessageBox tone={uploadMessage?.tone}>{uploadMessage?.text}</MessageBox>
+              <button
+                type="button"
+                className="profile-page__cta"
+                onClick={handleUpload}
+                disabled={!selectedFile || uploading}
+              >
+                {uploading ? "Upload laeuft..." : "Profilbild speichern"}
+              </button>
             </div>
           )}
-          <MessageBox tone={uploadMessage?.tone}>{uploadMessage?.text}</MessageBox>
-          <button type="button" className="btn" onClick={handleUpload} disabled={!selectedFile || uploading}>
-            {uploading ? "Upload laeuft..." : "Profilbild hochladen"}
-          </button>
+
+          {!previewUrl && uploadMessage ? <MessageBox tone={uploadMessage.tone}>{uploadMessage.text}</MessageBox> : null}
         </div>
-      </Card>
-      <ProfileView profile={profile} refresh={loadProfile} />
+
+        <PageFooter className="page__footer--sm page__footer--inverse" />
+
+        {deleteOpen ? (
+          <div className="profile-page__modal-backdrop" role="dialog" aria-modal="true">
+            <div className="profile-page__modal">
+              <p className="profile-page__modal-title">Account loeschen?</p>
+              <p className="profile-page__modal-text">
+                Bist du sicher, dass du deinen Account unwiderruflich loeschen willst?
+              </p>
+              <label className="profile-page__field">
+                <span className="profile-page__label">PASSWORT</span>
+                <input
+                  className="profile-page__input"
+                  type="password"
+                  value={deletePassword}
+                  onChange={(event) => setDeletePassword(event.target.value)}
+                  placeholder="Passwort eingeben"
+                />
+              </label>
+              <MessageBox tone={deleteMessage?.tone}>{deleteMessage?.text}</MessageBox>
+              <div className="profile-page__modal-actions">
+                <button
+                  type="button"
+                  className="profile-page__cta profile-page__cta--ghost"
+                  onClick={() => setDeleteOpen(false)}
+                  disabled={deleting}
+                >
+                  Abbrechen
+                </button>
+                <button
+                  type="button"
+                  className="profile-page__cta"
+                  onClick={handleDeleteAccount}
+                  disabled={deleting}
+                >
+                  {deleting ? "Loeschen..." : "Account loeschen"}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </section>
     </PageLayout>
   );
 }

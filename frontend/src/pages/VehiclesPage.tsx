@@ -53,7 +53,6 @@ export default function VehiclesPage() {
         <Logo alt="Esuap" size={180} className="page__logo" />
         <div className="vehicles-page__card stack stack--lg">
           <header className="vehicles-page__header">
-            <div className="vehicles-page__icon">+</div>
             <div>
               <p className="vehicles-page__title">FAHRZEUGE</p>
               <span className="vehicles-page__divider" aria-hidden="true" />
@@ -77,7 +76,12 @@ export default function VehiclesPage() {
                     )}
                   </div>
                   <div className="vehicles-page__details">
-                    <p className="vehicles-page__name">{vehicle.name || `Fahrzeug #${vehicle.id}`}</p>
+                    <div className="vehicles-page__row">
+                      <p className="vehicles-page__name">{vehicle.name || `Fahrzeug #${vehicle.id}`}</p>
+                      <Link to={`/vehicle-editor?vehicle=${vehicle.id}`} className="vehicles-page__edit">
+                        Bearbeiten
+                      </Link>
+                    </div>
                     <div className="vehicles-page__meta">
                       <span>Ladeflaeche: {vehicle.load_area ?? "k.A."} m2</span>
                       <span>Motor: {vehicle.motor_type ?? "k.A."}</span>
@@ -92,8 +96,8 @@ export default function VehiclesPage() {
           )}
 
           <div className="vehicles-page__actions">
-            <Link to="/vehicle-editor" className="vehicles-page__cta">
-              Fahrzeug erstellen oder bearbeiten
+            <Link to="/vehicle-editor?new=1" className="vehicles-page__cta">
+              Fahrzeug erstellen
             </Link>
           </div>
         </div>

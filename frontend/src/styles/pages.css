@@ -13,9 +13,10 @@
    8. Trip publication page
    9. Vehicle editor page
    10. Vehicles page
-   11. Signup page
-   12. Impressum page
-   13. Profile shortcut
+   11. Profile page
+   12. Signup page
+   13. Impressum page
+   14. Profile shortcut
    ========================================================================== */
 
 /* 1. Layout helpers */
@@ -744,6 +745,10 @@
   align-items: center;
 }
 
+.vehicle-editor__toolbar--single {
+  grid-template-columns: 1fr;
+}
+
 .vehicle-editor__new {
   display: grid;
   place-items: center;
@@ -966,19 +971,6 @@
   gap: 0.8rem;
 }
 
-.vehicles-page__icon {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: #f0f5f5;
-  color: #7b8b8a;
-  font-size: 2rem;
-  font-weight: 700;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.18);
-}
-
 .vehicles-page__title {
   margin: 0;
   font-size: 1.3rem;
@@ -1049,11 +1041,34 @@
   gap: 0.2rem;
 }
 
+.vehicles-page__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .vehicles-page__name {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.04em;
+}
+
+.vehicles-page__edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.3rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid #3c4f47;
+  background: transparent;
+  color: #3c4f47;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  text-transform: uppercase;
 }
 
 .vehicles-page__meta {
@@ -1110,7 +1125,300 @@
   text-align: center;
 }
 
-/* 11. Signup page */
+/* 11. Profile page */
+.profile-page__panel {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 360px;
+  padding: 1.1rem 1rem 1.3rem;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--color-dark-blue);
+  overflow: hidden;
+}
+
+.profile-page__panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  z-index: 0;
+}
+
+.profile-page__panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.profile-page__avatar {
+  display: grid;
+  place-items: center;
+  width: 110px;
+  height: 110px;
+  margin: 0 auto 0.5rem;
+}
+
+.profile-page__avatar-button {
+  display: grid;
+  place-items: center;
+  width: 110px;
+  height: 110px;
+  border: none;
+  border-radius: 50%;
+  background: #f0f5f5;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  overflow: hidden;
+  color: #7b8b8a;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.profile-page__avatar-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-page__avatar-button img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.profile-page__file-input {
+  display: none;
+}
+
+.profile-page__card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.6rem 1.4rem 1.6rem;
+  border-radius: 20px;
+  background: #d7d7d2;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.2);
+}
+
+.profile-page__header {
+  text-align: center;
+}
+
+.profile-page__title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.profile-page__divider {
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin: 0.35rem 0 0.15rem;
+  border-radius: 999px;
+  background: #6e7f7a;
+}
+
+.profile-page__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.profile-page__grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.profile-page__grid--two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.profile-page__field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.profile-page__field--full {
+  grid-column: 1 / -1;
+}
+
+.profile-page__label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.profile-page__value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  background: #8b9491;
+  color: #f0f4f3;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+.profile-page__date {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.profile-page__value--tight {
+  min-height: 30px;
+  padding: 0.3rem 0.4rem;
+}
+
+.profile-page__vehicles {
+  display: grid;
+  gap: 0.6rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.profile-page__section-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #3f5050;
+}
+
+.profile-page__section-link {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #3f5050;
+  text-decoration: none;
+}
+
+.profile-page__section-link:hover {
+  text-decoration: underline;
+}
+
+.profile-page__actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.profile-page__action {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  background: #3c4f47;
+  color: #0c1512;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.25);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profile-page__action svg {
+  width: 24px;
+  height: 24px;
+}
+
+.profile-page__upload {
+  padding-top: 0.25rem;
+}
+
+.profile-page__range {
+  width: 100%;
+  accent-color: #3c4f47;
+}
+
+.profile-page__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 14px;
+  background: #3c4f47;
+  color: var(--color-white);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.profile-page__cta--ghost {
+  background: transparent;
+  border: 1px solid #3c4f47;
+  color: var(--color-dark-blue);
+}
+
+.profile-page__cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.profile-page__input {
+  border: none;
+  border-radius: 6px;
+  background: #8b9491;
+  color: #f0f4f3;
+  padding: 0.45rem 0.6rem;
+  text-align: center;
+}
+
+.profile-page__input::placeholder {
+  color: rgba(240, 244, 243, 0.85);
+}
+
+.profile-page__modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(20, 25, 24, 0.6);
+  z-index: 50;
+  padding: 1.5rem;
+}
+
+.profile-page__modal {
+  width: min(360px, 100%);
+  display: grid;
+  gap: 0.8rem;
+  padding: 1.4rem 1.2rem 1.5rem;
+  border-radius: 18px;
+  background: #d7d7d2;
+  color: var(--color-dark-blue);
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.3);
+}
+
+.profile-page__modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profile-page__modal-text {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #42514e;
+}
+
+.profile-page__modal-actions {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* 12. Signup page */
 .signup {
   display: grid;
   place-items: center;
@@ -1120,7 +1428,7 @@
   --content-max: 680px;
 }
 
-/* 12. Impressum page */
+/* 13. Impressum page */
 .impressum__details {
   line-height: 1.6;
 }
@@ -1135,7 +1443,7 @@
   justify-content: center;
 }
 
-/* 13. Profile shortcut */
+/* 14. Profile shortcut */
 .profile-shortcut {
   position: fixed;
   top: 1.25rem;
@@ -1206,7 +1514,9 @@
 .profile-shortcut__image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
 }
 
 .profile-shortcut__fallback {

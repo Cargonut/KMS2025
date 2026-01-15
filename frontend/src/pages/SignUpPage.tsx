@@ -1,11 +1,12 @@
 ﻿import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signupUser } from "../app/api";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 import SignupForm, { SignupFormData, getSignupValidationError, toSignupInput } from "../features/SignupForm";
 import type { Message } from "../features/types";
 
 export default function SignUpPage() {
+  const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<Message>();
 
@@ -22,6 +23,7 @@ export default function SignUpPage() {
 
       setMessage({ tone: "success", text: "Registrierung erfolgreich! Bitte jetzt einloggen." });
       reset();
+      navigate("/login");
     } catch (err) {
       const nextMessage = err instanceof Error ? err.message : "Unbekannter Fehler";
       setMessage({ tone: "error", text: nextMessage });

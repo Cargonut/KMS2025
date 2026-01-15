@@ -250,6 +250,17 @@ export async function deleteVehicle(id: number | string, token: string): Promise
     return result.deleteVehicle;
 }
 
+export async function deleteMe(password: string, token: string): Promise<boolean> {
+    const result = await graphqlRequest<{ deleteMe: boolean }>(
+        `mutation DeleteMe($password: String!) {
+      deleteMe(password: $password)
+    }`,
+        { password },
+        token,
+    );
+    return result.deleteMe;
+}
+
 export async function uploadVehicleImage(file: File): Promise<string> {
     const formData = new FormData();
     formData.append('file', file);

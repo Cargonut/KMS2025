@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   MotorType,
   UpdateVehicleInput,
@@ -35,6 +35,8 @@ const emptyForm: VehicleForm = {
 };
 
 export default function VehicleEditorPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [token, setToken] = useState(() => localStorage.getItem(storageKey) || "");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
@@ -42,6 +44,17 @@ export default function VehicleEditorPage() {
   const [message, setMessage] = useState<{ tone: "success" | "error" | "info"; text: string }>();
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const requestedVehicleId = useMemo(() => {
+    const raw = searchParams.get("vehicle");
+    if (!raw) return null;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+  }, [searchParams]);
+  const forceNew = useMemo(() => {
+    const raw = searchParams.get("new");
+    return raw === "1" || raw === "true";
+  }, [searchParams]);
+  const isEditMode = requestedVehicleId !== null;
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -64,14 +77,34 @@ export default function VehicleEditorPage() {
           setSelectedVehicleId(null);
           return;
         }
+        if (forceNew) {
+          setSelectedVehicleId(null);
+          return;
+        }
+        if (requestedVehicleId && data.some((vehicle) => vehicle.id === requestedVehicleId)) {
+          setSelectedVehicleId(requestedVehicleId);
+          return;
+        }
+        if (requestedVehicleId) {
+          setSelectedVehicleId(null);
+          setMessage({ tone: "error", text: "Fahrzeug nicht gefunden." });
+          return;
+        }
         setSelectedVehicleId((current) => current ?? data[0]?.id ?? null);
       })
       .catch((err: Error) => setMessage({ tone: "error", text: err.message }));
-  }, [token]);
+  }, [token, requestedVehicleId, forceNew]);
 
   useEffect(() => {
     refreshVehicles();
   }, [refreshVehicles]);
+
+  useEffect(() => {
+    if (!forceNew) return;
+    setSelectedVehicleId(null);
+    setForm(emptyForm);
+    setMessage(undefined);
+  }, [forceNew]);
 
   const selectedVehicle = useMemo(
     () => vehicles.find((vehicle) => vehicle.id === selectedVehicleId) ?? null,
@@ -122,6 +155,10 @@ export default function VehicleEditorPage() {
       setMessage({ tone: "error", text: "Bitte zuerst einloggen." });
       return;
     }
+    if (isEditMode && !selectedVehicleId) {
+      setMessage({ tone: "error", text: "Fahrzeug nicht gefunden." });
+      return;
+    }
     setBusy(true);
     setMessage(undefined);
 
@@ -167,6 +204,7 @@ export default function VehicleEditorPage() {
 
       refreshVehicles();
       window.dispatchEvent(new Event("vehicles-changed"));
+      navigate("/vehicles");
     } catch (err) {
       const text = err instanceof Error ? err.message : "Unbekannter Fehler.";
       setMessage({ tone: "error", text });
@@ -194,6 +232,7 @@ export default function VehicleEditorPage() {
   };
 
   const handleNew = () => {
+    if (isEditMode) return;
     setSelectedVehicleId(null);
     setForm(emptyForm);
     setMessage(undefined);
@@ -204,10 +243,12 @@ export default function VehicleEditorPage() {
       <section className="vehicle-editor__panel stack stack--lg">
         <Logo alt="Esuap" size={180} className="page__logo" />
         <div className="vehicle-editor__card stack stack--lg">
-          <div className="vehicle-editor__toolbar">
-            <button type="button" className="vehicle-editor__new" onClick={handleNew} aria-label="Neues Fahrzeug">
-              +
-            </button>
+          <div className={`vehicle-editor__toolbar${isEditMode ? " vehicle-editor__toolbar--single" : ""}`}>
+            {!isEditMode ? (
+              <button type="button" className="vehicle-editor__new" onClick={handleNew} aria-label="Neues Fahrzeug">
+                +
+              </button>
+            ) : null}
             <div>
               <p className="vehicle-editor__title">FAHRZEUGE</p>
               <span className="vehicle-editor__divider" aria-hidden="true" />
