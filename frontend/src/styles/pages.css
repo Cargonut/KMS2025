@@ -305,6 +305,36 @@
   font-size: 0.85rem;
 }
 
+.driver-menu__input {
+  background: #f4f7f6;
+}
+
+.driver-menu__hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #2f3e38;
+}
+
+.driver-menu__vehicle {
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  background: #dfe6e3;
+  color: #2f3e38;
+}
+
+.driver-menu__vehicle-title {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.driver-menu__vehicle-detail {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
 .driver-menu__cta,
 .passenger-menu__cta {
   align-self: center;
@@ -321,6 +351,13 @@
   cursor: pointer;
 }
 
+.driver-menu__cta--ghost {
+  background: transparent;
+  border: 1px solid #3c4f47;
+  box-shadow: none;
+  color: #3c4f47;
+}
+
 .driver-menu__link,
 .passenger-menu__link {
   border: none;
@@ -330,6 +367,17 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   cursor: pointer;
+}
+
+.driver-menu__notice {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #1f2a26;
+  text-align: center;
+  font-size: 0.8rem;
 }
 
 /* 7. Passenger menu page */
