@@ -6,13 +6,15 @@
 
 import { Link } from "react-router-dom";
 import Logo from "../components/Logo";
+import { PageFooter, PageLayout } from "../components/PageLayout";
 
 export default function LandingPage() {
+  // Startseite nutzt das Template fuer einen schlanken Aufbau.
   return (
-    <main className="page-center">
+    <PageLayout variant="center">
       <section className="landing__content stack stack--xl">
         <header>
-          <Logo alt="Esuap" />
+          <Logo alt="Esuap" className="page__logo" />
           <p className="landing__subtitle">
             Mitfahrgelegenheiten für Cargo & Menschen
           </p>
@@ -28,12 +30,8 @@ export default function LandingPage() {
           </Link>
         </nav>
 
-        <footer className="page__footer page__footer--sm page__footer--spaced">
-          <Link to="/impressum" className="page__footer-link">
-            Impressum
-          </Link>
-        </footer>
+        <PageFooter className="page__footer--sm page__footer--spaced" />
       </section>
-    </main>
+    </PageLayout>
   );
 }

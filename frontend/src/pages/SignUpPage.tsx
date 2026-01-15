@@ -1,7 +1,7 @@
 ﻿import { useState } from "react";
 import { Link } from "react-router-dom";
 import { signupUser } from "../app/api";
-import Logo from "../components/Logo";
+import { PageFooter, PageLayout } from "../components/PageLayout";
 import SignupForm, { SignupFormData, getSignupValidationError, toSignupInput } from "../features/SignupForm";
 import type { Message } from "../features/types";
 
@@ -30,30 +30,26 @@ export default function SignUpPage() {
     }
   };
 
+  // Registrierung setzt auf das gemeinsame Seiten-Template.
   return (
-    <main className="page signup">
-      <header className="page__header page__header--center">
-        <div>
-          <Logo alt="Esuap" className="page__logo" size={180} />
-          <h1 className="heading heading--xl">Registrierung</h1>
-          <p className="muted">Account anlegen, um Angebote zu erstellen.</p>
-        </div>
-        <div className="session session--center">
+    <PageLayout
+      variant="default"
+      className="signup"
+      header={{
+        align: "center",
+        logo: { alt: "Esuap", size: 180 },
+        title: "Registrierung",
+        subtitle: "Account anlegen, um Angebote zu erstellen.",
+        actions: (
           <Link to="/login" className="btn btn--ghost">
             Login
           </Link>
-        </div>
-      </header>
-
-      <section className="page__content">
-        <SignupForm onSubmit={handleSignup} busy={busy} message={message} />
-      </section>
-
-      <footer className="muted page__footer">
-        <Link to="/impressum" className="page__footer-link">
-          Impressum
-        </Link>
-      </footer>
-    </main>
+        ),
+      }}
+      contentWrap
+      footer={<PageFooter className="page__footer--sm muted" />}
+    >
+      <SignupForm onSubmit={handleSignup} busy={busy} message={message} />
+    </PageLayout>
   );
 }

@@ -1,52 +1,52 @@
-﻿import { Link } from "react-router-dom";
-import Logo from "../components/Logo";
+import { Link } from "react-router-dom";
 import Card from "../components/ui/Card";
+import { PageLayout } from "../components/PageLayout";
 
 export default function ImpressumPage() {
+  // Impressum bleibt eigenstaendig, nutzt aber das Template fuer den Rahmen.
   return (
-    <main className="page page-stack">
-      <header className="page__header page__header--center">
-        <div>
-          <Logo alt="Esuap" className="page__logo" size={180} />
-          <h1 className="heading heading--xl">Impressum</h1>
-          <p className="muted">Rechtliche Angaben und Kontakt.</p>
-        </div>
-      </header>
-
-      <section className="page__content">
-        <Card
-          title="Kontakt"
-          footer={
-            <div className="impressum__footer">
-              <Link to="/" className="btn btn--ghost">
-                Zurück zur Startseite
-              </Link>
-            </div>
-          }
-        >
-          <div className="impressum__details stack">
-            <p>
-              <strong>Esuap Transportations GmbH & Weihnachtsmann &amp; Co. KG</strong>
-            </p>
-
-            <address className="impressum__address">
-              Esnikel Esuap
-              <br />
-              Adolph-Kolping-Str. 1
-              <br />
-              12345 Köthen
-            </address>
-
-            <p>E-Mail: kontakt@esuap.de</p>
-
-            <p>
-              Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV:
-              <br />
-              Esnikel Esuap
-            </p>
+    <PageLayout
+      variant="stack"
+      header={{
+        align: "center",
+        logo: { alt: "Esuap", size: 180 },
+        title: "Impressum",
+        subtitle: "Rechtliche Angaben und Kontakt.",
+      }}
+      contentWrap
+    >
+      <Card
+        title="Kontakt"
+        footer={
+          <div className="impressum__footer">
+            <Link to="/" className="btn btn--ghost">
+              Zurueck zur Startseite
+            </Link>
           </div>
-        </Card>
-      </section>
-    </main>
+        }
+      >
+        <div className="impressum__details stack">
+          <p>
+            <strong>Esuap Transportations GmbH & Weihnachtsmann &amp; Co. KG</strong>
+          </p>
+
+          <address className="impressum__address">
+            Esnikel Esuap
+            <br />
+            Adolph-Kolping-Str. 1
+            <br />
+            12345 Koethen
+          </address>
+
+          <p>E-Mail: kontakt@esuap.de</p>
+
+          <p>
+            Verantwortlich fuer den Inhalt nach Paragraph 55 Abs. 2 RStV:
+            <br />
+            Esnikel Esuap
+          </p>
+        </div>
+      </Card>
+    </PageLayout>
   );
 }

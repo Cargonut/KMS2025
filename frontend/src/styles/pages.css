@@ -19,8 +19,18 @@
 .page-center {
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 1.5rem;
   min-height: 100vh;
   padding: 2rem;
+}
+
+.page-theme--driver {
+  background: var(--color-green);
+}
+
+.page-theme--passenger {
+  background: var(--color-blue);
 }
 
 .page-stack {
@@ -100,6 +110,7 @@
   place-items: center;
   width: 140px;
   height: 140px;
+  overflow: hidden;
   border: 2px dashed rgba(51, 78, 79, 0.6);
   border-radius: 50%;
   background: #ffffff;
@@ -228,6 +239,7 @@
   place-items: center;
   width: 84px;
   height: 84px;
+  overflow: hidden;
   border-radius: 50%;
   background: #515451;
   color: #f1f1ed;
@@ -382,6 +394,13 @@
   top: 1.25rem;
   right: 1.25rem;
   z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.profile-shortcut__button {
   display: grid;
   place-items: center;
   width: 56px;
@@ -392,13 +411,49 @@
   background: rgba(240, 245, 245, 0.92);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
   color: var(--color-dark-blue);
-  text-decoration: none;
+  cursor: pointer;
   transition: transform 120ms ease, box-shadow 120ms ease;
 }
 
-.profile-shortcut:hover {
+.profile-shortcut__button:hover {
   transform: translateY(-1px);
   box-shadow: 0 16px 28px rgba(0, 0, 0, 0.28);
+}
+
+.profile-shortcut__button:focus-visible {
+  outline: 3px solid rgba(240, 245, 245, 0.9);
+  outline-offset: 2px;
+}
+
+.profile-menu {
+  min-width: 160px;
+  padding: 0.35rem;
+  border-radius: 12px;
+  border: 1px solid rgba(51, 78, 79, 0.2);
+  background: rgba(240, 245, 245, 0.98);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(6px);
+}
+
+.profile-menu__item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-dark-blue);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.profile-menu__item:hover,
+.profile-menu__item:focus-visible {
+  background: rgba(51, 78, 79, 0.12);
+  outline: none;
 }
 
 .profile-shortcut__image {

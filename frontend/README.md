@@ -1,4 +1,11 @@
-# React + TypeScript + Vite
+# Frontend
+
+Kurzinfo fuer dieses Projekt:
+- Seiten nutzen `PageLayout` in `src/components/PageLayout.tsx`.
+- Standard-Footer ueber `PageFooter` (Impressum-Link).
+- Neue Seiten: siehe `dev_documentation.md` im Repo-Root.
+
+## React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 

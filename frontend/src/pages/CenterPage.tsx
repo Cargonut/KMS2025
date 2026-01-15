@@ -1,6 +1,7 @@
 import { Link, Navigate } from "react-router-dom";
 import Logo from "../components/Logo";
 import ProfileAvatar from "../components/ProfileAvatar";
+import { PageFooter, PageLayout } from "../components/PageLayout";
 
 export default function CenterPage() {
   const token = localStorage.getItem("cargonaut-token");
@@ -8,10 +9,11 @@ export default function CenterPage() {
     return <Navigate to="/signup" replace />;
   }
 
+  // Auswahlseite nutzt das Template, Inhalt bleibt gleich.
   return (
-    <main className="page-center">
+    <PageLayout variant="center">
       <div className="stack stack--lg">
-        <Logo alt="Esuap" size={180} />
+        <Logo alt="Esuap" size={180} className="page__logo" />
 
         <section className="center__panel stack stack--xxl">
           <ProfileAvatar className="center__avatar" fallbackText="Profilbild" label="Profilbild" />
@@ -25,13 +27,9 @@ export default function CenterPage() {
             </Link>
           </div>
 
-          <footer className="page__footer page__footer--sm">
-            <Link to="/impressum" className="page__footer-link">
-              Impressum
-            </Link>
-          </footer>
+          <PageFooter className="page__footer--sm" />
         </section>
       </div>
-    </main>
+    </PageLayout>
   );
 }

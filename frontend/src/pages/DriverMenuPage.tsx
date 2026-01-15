@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
 import ProfileAvatar from "../components/ProfileAvatar";
+import { PageFooter, PageLayout } from "../components/PageLayout";
 
 export default function DriverMenuPage() {
+  // Fahrer-Ansicht nutzt das gemeinsame Template.
   return (
-    <main className="page-center">
+    <PageLayout variant="center" className="page-theme page-theme--driver">
       <section className="driver-menu__panel stack stack--lg">
         <div className="driver-menu__card stack stack--xl">
           <ProfileAvatar
@@ -48,12 +49,8 @@ export default function DriverMenuPage() {
           </div>
         </div>
 
-        <footer className="page__footer page__footer--xs page__footer--inverse">
-          <Link to="/impressum" className="page__footer-link">
-            IMPRESSUM
-          </Link>
-        </footer>
+        <PageFooter className="page__footer--sm page__footer--inverse" />
       </section>
-    </main>
+    </PageLayout>
   );
 }

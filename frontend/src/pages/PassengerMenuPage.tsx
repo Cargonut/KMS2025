@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
 import ProfileAvatar from "../components/ProfileAvatar";
+import { PageFooter, PageLayout } from "../components/PageLayout";
 
 export default function PassengerMenuPage() {
+  // Mitfahrer-Ansicht nutzt das gemeinsame Template.
   return (
-    <main className="page-center">
+    <PageLayout variant="center" className="page-theme page-theme--passenger">
       <section className="passenger-menu__panel stack stack--lg">
         <p className="passenger-menu__title">MITFAHRER MENU</p>
 
@@ -54,12 +55,8 @@ export default function PassengerMenuPage() {
           </div>
         </div>
 
-        <footer className="page__footer page__footer--xs page__footer--inverse">
-          <Link to="/impressum" className="page__footer-link">
-            IMPRESSUM
-          </Link>
-        </footer>
+        <PageFooter className="page__footer--sm page__footer--inverse" />
       </section>
-    </main>
+    </PageLayout>
   );
 }

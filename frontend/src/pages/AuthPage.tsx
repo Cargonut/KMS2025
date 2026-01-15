@@ -15,6 +15,7 @@ import OfferPrereqForm from '../features/OfferPrereqForm';
 import ProfileView from '../features/ProfileView';
 import SignupForm, { SignupFormData, getSignupValidationError, toSignupInput } from '../features/SignupForm';
 import VehicleManager from '../features/VehicleManager';
+import { PageFooter, PageLayout } from '../components/PageLayout';
 import type { Message } from '../features/types';
 
 const storageKey = 'cargonaut-token';
@@ -120,24 +121,27 @@ export default function AuthPage() {
         setLoginMessage({ tone: 'info', text: 'Abgemeldet.' });
     };
 
+    // Sammelseite nutzt das Template fuer Header und Layout-Rahmen.
     return (
-        <div className="page">
-            <header className="page__header">
-                <div>
-                    <p className="eyebrow">MyCargonaut</p>
-                    <h1 className="heading heading--xl">Registrierung & Login</h1>
-                    <p className="muted">Vite + React (TSX) UI gegen das vorhandene GraphQL-Backend.</p>
-                </div>
-                <div className="session">
-                    <span className="badge">{token ? 'Session aktiv' : 'nicht eingeloggt'}</span>
-                    {token ? (
-                        <button type="button" className="btn btn--ghost" onClick={logout}>
-                            Logout
-                        </button>
-                    ) : null}
-                </div>
-            </header>
-
+        <PageLayout
+            as="div"
+            header={{
+                eyebrow: 'MyCargonaut',
+                title: 'Registrierung & Login',
+                subtitle: 'Vite + React (TSX) UI gegen das vorhandene GraphQL-Backend.',
+                actions: (
+                    <>
+                        <span className="badge">{token ? 'Session aktiv' : 'nicht eingeloggt'}</span>
+                        {token ? (
+                            <button type="button" className="btn btn--ghost" onClick={logout}>
+                                Logout
+                            </button>
+                        ) : null}
+                    </>
+                ),
+            }}
+            footer={<PageFooter className="page__footer--sm" />}
+        >
             <main className="layout">
                 <div className="layout__column">
                     <SignupForm onSubmit={handleSignup} busy={busy} message={signupMessage} />
@@ -161,6 +165,6 @@ export default function AuthPage() {
                     />
                 </div>
             </main>
-        </div>
+        </PageLayout>
     );
 }

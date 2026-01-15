@@ -1,8 +1,8 @@
-﻿import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChangeEvent, PointerEvent } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { fetchProfile, Profile, updateProfile, uploadProfileImage } from "../app/api";
-import Logo from "../components/Logo";
+import { PageFooter, PageLayout } from "../components/PageLayout";
 import Card from "../components/ui/Card";
 import MessageBox from "../components/ui/MessageBox";
 import ProfileView from "../features/ProfileView";
@@ -231,91 +231,87 @@ export default function ProfilePage() {
 
   const zoomMax = Math.max(minZoom * 3, minZoom + 0.5);
 
+  // Profilseite bleibt funktional gleich, Rahmen kommt aus dem Template.
   return (
-    <main className="page page-stack">
-      <header className="page__header page__header--center">
-        <div>
-          <Logo alt="Esuap" className="page__logo" size={180} />
-          <h1 className="heading heading--xl">Profil</h1>
-          <p className="muted">Deine hinterlegten Daten.</p>
-        </div>
-        <div className="session session--center">
+    <PageLayout
+      variant="stack"
+      header={{
+        align: "center",
+        logo: { alt: "Esuap", size: 180 },
+        title: "Profil",
+        subtitle: "Deine hinterlegten Daten.",
+        actions: (
           <Link to="/center" className="btn btn--ghost">
             Zur Auswahl
           </Link>
-        </div>
-      </header>
-
-      <section className="page__content stack stack--lg">
-        {error && <MessageBox tone="error">{error}</MessageBox>}
-        {busy && !profile && <p className="muted">Lade Profil...</p>}
-        <Card title="Profilbild aktualisieren">
-          <div className="stack stack--sm">
-            <label className="field">
-              <span>Bilddatei auswaehlen</span>
-              <input
-                ref={fileInputRef}
-                className="field__control"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                disabled={uploading}
-              />
-            </label>
-            <p className="muted">
-              {selectedFile ? `Ausgewaehlt: ${selectedFile.name}` : "Noch keine Datei ausgewaehlt."}
-            </p>
-            {previewUrl && imageSize && (
-              <div className="image-preview">
-                <span className="muted">Vorschau</span>
-                <div
-                  className={`image-preview__frame${dragging ? " image-preview__frame--dragging" : ""}`}
-                  onPointerDown={handlePointerDown}
-                  onPointerMove={handlePointerMove}
-                  onPointerUp={handlePointerUp}
-                  onPointerCancel={handlePointerUp}
-                >
-                  <img
-                    className="image-preview__image"
-                    src={previewUrl}
-                    alt="Profilbild Vorschau"
-                    style={{
-                      width: imageSize.width * zoom,
-                      height: imageSize.height * zoom,
-                      transform: `translate(${offset.x}px, ${offset.y}px)`,
-                    }}
-                  />
-                </div>
-                <span className="muted image-preview__hint">Ziehen, um den Ausschnitt zu verschieben.</span>
-                <label className="field field--tight">
-                  <span>Zoom</span>
-                  <input
-                    className="field__control image-preview__range"
-                    type="range"
-                    min={minZoom}
-                    max={zoomMax}
-                    step={0.01}
-                    value={zoom}
-                    onChange={handleZoomChange}
-                    disabled={!imageSize}
-                  />
-                </label>
+        ),
+      }}
+      contentWrap
+      contentClassName="stack stack--lg"
+      footer={<PageFooter className="page__footer--sm" />}
+    >
+      {error && <MessageBox tone="error">{error}</MessageBox>}
+      {busy && !profile && <p className="muted">Lade Profil...</p>}
+      <Card title="Profilbild aktualisieren">
+        <div className="stack stack--sm">
+          <label className="field">
+            <span>Bilddatei auswaehlen</span>
+            <input
+              ref={fileInputRef}
+              className="field__control"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              disabled={uploading}
+            />
+          </label>
+          <p className="muted">
+            {selectedFile ? `Ausgewaehlt: ${selectedFile.name}` : "Noch keine Datei ausgewaehlt."}
+          </p>
+          {previewUrl && imageSize && (
+            <div className="image-preview">
+              <span className="muted">Vorschau</span>
+              <div
+                className={`image-preview__frame${dragging ? " image-preview__frame--dragging" : ""}`}
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+              >
+                <img
+                  className="image-preview__image"
+                  src={previewUrl}
+                  alt="Profilbild Vorschau"
+                  style={{
+                    width: imageSize.width * zoom,
+                    height: imageSize.height * zoom,
+                    transform: `translate(${offset.x}px, ${offset.y}px)`,
+                  }}
+                />
               </div>
-            )}
-            <MessageBox tone={uploadMessage?.tone}>{uploadMessage?.text}</MessageBox>
-            <button type="button" className="btn" onClick={handleUpload} disabled={!selectedFile || uploading}>
-              {uploading ? "Upload laeuft..." : "Profilbild hochladen"}
-            </button>
-          </div>
-        </Card>
-        <ProfileView profile={profile} refresh={loadProfile} />
-      </section>
-
-      <footer className="page__footer">
-        <Link to="/impressum" className="page__footer-link">
-          Impressum
-        </Link>
-      </footer>
-    </main>
+              <span className="muted image-preview__hint">Ziehen, um den Ausschnitt zu verschieben.</span>
+              <label className="field field--tight">
+                <span>Zoom</span>
+                <input
+                  className="field__control image-preview__range"
+                  type="range"
+                  min={minZoom}
+                  max={zoomMax}
+                  step={0.01}
+                  value={zoom}
+                  onChange={handleZoomChange}
+                  disabled={!imageSize}
+                />
+              </label>
+            </div>
+          )}
+          <MessageBox tone={uploadMessage?.tone}>{uploadMessage?.text}</MessageBox>
+          <button type="button" className="btn" onClick={handleUpload} disabled={!selectedFile || uploading}>
+            {uploading ? "Upload laeuft..." : "Profilbild hochladen"}
+          </button>
+        </div>
+      </Card>
+      <ProfileView profile={profile} refresh={loadProfile} />
+    </PageLayout>
   );
 }

@@ -1,9 +1,10 @@
 import { FormEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { loginUser } from "../app/api";
 import Field from "../components/ui/Field";
 import MessageBox, { MessageTone } from "../components/ui/MessageBox";
 import Logo from "../components/Logo";
+import { PageFooter, PageLayout } from "../components/PageLayout";
 
 const storageKey = "cargonaut-token";
 
@@ -35,9 +36,10 @@ export default function LoginPage() {
     }
   };
 
+  // Login-Seite bleibt optisch gleich, nutzt aber das gemeinsame Layout.
   return (
-    <main className="login page-center">
-      <Logo alt="Esuap" />
+    <PageLayout variant="center" className="login">
+      <Logo alt="Esuap" className="page__logo" />
       <div className="login__card">
         <h1 className="login__title koho-bold">LOGIN</h1>
         <div className="login__divider" />
@@ -75,11 +77,7 @@ export default function LoginPage() {
         </form>
       </div>
 
-      <footer className="login__footer page__footer page__footer--xs page__footer--inverse">
-        <Link to="/impressum" className="page__footer-link">
-          IMPRESSUM
-        </Link>
-      </footer>
-    </main>
+      <PageFooter className="login__footer page__footer--sm page__footer--inverse" />
+    </PageLayout>
   );
 }
