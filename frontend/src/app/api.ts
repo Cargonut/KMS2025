@@ -219,24 +219,32 @@ export async function createVehicle(data: CreateVehicleInput, token: string): Pr
     );
 }
 
-export async function updateVehicle(id: number, data: UpdateVehicleInput, token: string): Promise<void> {
+export async function updateVehicle(id: number | string, data: UpdateVehicleInput, token: string): Promise<void> {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    if (!Number.isFinite(numericId)) {
+        throw new Error('Ungueltige Fahrzeug-ID.');
+    }
     await graphqlRequest<{ updateVehicle: { __typename: string } }>(
         `mutation UpdateVehicle($id: Int!, $data: UpdateVehicleInput!) {
       updateVehicle(id: $id, data: $data) {
         __typename
       }
     }`,
-        { id, data },
+        { id: numericId, data },
         token,
     );
 }
 
-export async function deleteVehicle(id: number, token: string): Promise<boolean> {
+export async function deleteVehicle(id: number | string, token: string): Promise<boolean> {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    if (!Number.isFinite(numericId)) {
+        throw new Error('Ungueltige Fahrzeug-ID.');
+    }
     const result = await graphqlRequest<{ deleteVehicle: boolean }>(
         `mutation DeleteVehicle($id: Int!) {
       deleteVehicle(id: $id)
     }`,
-        { id },
+        { id: numericId },
         token,
     );
     return result.deleteVehicle;
