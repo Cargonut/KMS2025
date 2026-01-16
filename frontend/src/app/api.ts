@@ -30,13 +30,27 @@ export type Vehicle = {
 export type Trip = {
     id: number;
     type: TripType;
+    user_id: number;
     from_location: string;
     to_location: string;
     start_date: string;
     end_date?: string | null;
     vehicle_id?: number | null;
+    weight?: number | null;
+    seats?: number | null;
+    price?: number | null;
     is_active: boolean;
     restrictions?: string | null;
+    vehicle?: Vehicle | null;
+};
+
+export type TripPassenger = {
+    id: number;
+    trip_id: number;
+    passenger_id: number;
+    joined_at: string;
+    status: string;
+    trip?: Trip | null;
 };
 
 export function calculateAge(dateString: string | null | undefined): number | null {
@@ -235,6 +249,113 @@ export async function updateVehicle(id: number | string, data: UpdateVehicleInpu
     );
 }
 
+export async function fetchTrips(): Promise<Trip[]> {
+    const result = await graphqlRequest<{ trips?: Trip[] | null }>(
+        `query Trips {
+      trips {
+        id
+        type
+        user_id
+        from_location
+        to_location
+        start_date
+        end_date
+        vehicle_id
+        weight
+        seats
+        price
+        is_active
+        restrictions
+        vehicle {
+          id
+          name
+          motor_type
+          load_area
+          weight
+          image_urls
+        }
+      }
+    }`,
+    );
+    return result.trips ?? [];
+}
+
+export async function fetchMyTripBookings(token: string): Promise<TripPassenger[]> {
+    const result = await graphqlRequest<{ myTripBookings?: TripPassenger[] | null }>(
+        `query MyTripBookings {
+      myTripBookings {
+        id
+        trip_id
+        passenger_id
+        joined_at
+        status
+        trip {
+          id
+          type
+          user_id
+          from_location
+          to_location
+          start_date
+          end_date
+          vehicle_id
+          weight
+          seats
+          price
+          is_active
+          restrictions
+          vehicle {
+            id
+            name
+            motor_type
+            load_area
+            weight
+            image_urls
+          }
+        }
+      }
+    }`,
+        {},
+        token,
+    );
+    return result.myTripBookings ?? [];
+}
+
+export async function bookTrip(tripId: number | string, token: string): Promise<TripPassenger> {
+    const numericId = typeof tripId === 'string' ? Number(tripId) : tripId;
+    if (!Number.isFinite(numericId)) {
+        throw new Error('Ungueltige Fahrt-ID.');
+    }
+    const result = await graphqlRequest<{ bookTrip: TripPassenger }>(
+        `mutation BookTrip($tripId: Int!) {
+      bookTrip(tripId: $tripId) {
+        id
+        trip_id
+        passenger_id
+        joined_at
+        status
+      }
+    }`,
+        { tripId: numericId },
+        token,
+    );
+    return result.bookTrip;
+}
+
+export async function deleteTrip(id: number | string, token: string): Promise<boolean> {
+    const numericId = typeof id === 'string' ? Number(id) : id;
+    if (!Number.isFinite(numericId)) {
+        throw new Error('Ungueltige Fahrt-ID.');
+    }
+    const result = await graphqlRequest<{ deleteTrip: boolean }>(
+        `mutation DeleteTrip($id: Int!) {
+      deleteTrip(id: $id)
+    }`,
+        { id: numericId },
+        token,
+    );
+    return result.deleteTrip;
+}
+
 export async function deleteVehicle(id: number | string, token: string): Promise<boolean> {
     const numericId = typeof id === 'string' ? Number(id) : id;
     if (!Number.isFinite(numericId)) {
@@ -301,6 +422,7 @@ export async function createTrip(data: CreateTripInput, token: string): Promise<
       createTrip(data: $data) {
         id
         type
+        user_id
         from_location
         to_location
         start_date

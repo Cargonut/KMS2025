@@ -44,6 +44,9 @@ export default function VehicleEditorPage() {
   const [message, setMessage] = useState<{ tone: "success" | "error" | "info"; text: string }>();
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState<{ tone: "success" | "error" | "info"; text: string }>();
+  const [deleting, setDeleting] = useState(false);
   const requestedVehicleId = useMemo(() => {
     const raw = searchParams.get("vehicle");
     if (!raw) return null;
@@ -81,7 +84,7 @@ export default function VehicleEditorPage() {
           setSelectedVehicleId(null);
           return;
         }
-        if (requestedVehicleId && data.some((vehicle) => vehicle.id === requestedVehicleId)) {
+        if (requestedVehicleId && data.some((vehicle) => Number(vehicle.id) === requestedVehicleId)) {
           setSelectedVehicleId(requestedVehicleId);
           return;
         }
@@ -90,7 +93,8 @@ export default function VehicleEditorPage() {
           setMessage({ tone: "error", text: "Fahrzeug nicht gefunden." });
           return;
         }
-        setSelectedVehicleId((current) => current ?? data[0]?.id ?? null);
+        const firstId = Number(data[0]?.id);
+        setSelectedVehicleId((current) => current ?? (Number.isFinite(firstId) ? firstId : null));
       })
       .catch((err: Error) => setMessage({ tone: "error", text: err.message }));
   }, [token, requestedVehicleId, forceNew]);
@@ -107,7 +111,10 @@ export default function VehicleEditorPage() {
   }, [forceNew]);
 
   const selectedVehicle = useMemo(
-    () => vehicles.find((vehicle) => vehicle.id === selectedVehicleId) ?? null,
+    () =>
+      selectedVehicleId === null
+        ? null
+        : vehicles.find((vehicle) => Number(vehicle.id) === selectedVehicleId) ?? null,
     [selectedVehicleId, vehicles],
   );
 
@@ -213,21 +220,29 @@ export default function VehicleEditorPage() {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteRequest = () => {
+    if (!selectedVehicleId) return;
+    setDeleteMessage(undefined);
+    setDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
     if (!token || !selectedVehicleId) return;
-    setBusy(true);
-    setMessage(undefined);
+    setDeleting(true);
+    setDeleteMessage(undefined);
     try {
       await deleteVehicle(selectedVehicleId, token);
       setSelectedVehicleId(null);
       setMessage({ tone: "success", text: "Fahrzeug entfernt." });
+      setDeleteOpen(false);
       refreshVehicles();
       window.dispatchEvent(new Event("vehicles-changed"));
+      navigate("/vehicles", { replace: true });
     } catch (err) {
       const text = err instanceof Error ? err.message : "Unbekannter Fehler.";
-      setMessage({ tone: "error", text });
+      setDeleteMessage({ tone: "error", text });
     } finally {
-      setBusy(false);
+      setDeleting(false);
     }
   };
 
@@ -263,7 +278,7 @@ export default function VehicleEditorPage() {
                 className="vehicle-editor__input"
                 value={form.name}
                 onChange={(event) => handleChange("name", event.target.value)}
-                placeholder="VW Bus '89"
+                placeholder="Fahrzeugname"
               />
             </label>
 
@@ -311,6 +326,7 @@ export default function VehicleEditorPage() {
                 step="0.1"
                 value={form.load_area}
                 onChange={(event) => handleChange("load_area", event.target.value)}
+                placeholder="z. B. 6.5"
               />
             </label>
 
@@ -339,6 +355,7 @@ export default function VehicleEditorPage() {
                 step="0.1"
                 value={form.weight}
                 onChange={(event) => handleChange("weight", event.target.value)}
+                placeholder="z. B. 1200"
               />
             </label>
 
@@ -349,7 +366,7 @@ export default function VehicleEditorPage() {
                 rows={4}
                 value={form.special_features}
                 onChange={(event) => handleChange("special_features", event.target.value)}
-                placeholder="z. B. Klima, Rampe, Gurte"
+                placeholder="z. B. Kuehlbox, Rampe, Gurte"
               />
             </label>
 
@@ -360,7 +377,12 @@ export default function VehicleEditorPage() {
                 {busy ? "Speichern..." : "Fahrzeug speichern"}
               </button>
               {selectedVehicleId ? (
-                <button type="button" className="vehicle-editor__delete" onClick={handleDelete} disabled={busy}>
+                <button
+                  type="button"
+                  className="vehicle-editor__delete"
+                  onClick={handleDeleteRequest}
+                  disabled={busy || deleting}
+                >
                   Fahrzeug loeschen
                 </button>
               ) : null}
@@ -378,6 +400,36 @@ export default function VehicleEditorPage() {
         ) : null}
 
         <PageFooter className="page__footer--sm page__footer--inverse" />
+
+        {deleteOpen ? (
+          <div className="profile-page__modal-backdrop" role="dialog" aria-modal="true">
+            <div className="profile-page__modal">
+              <p className="profile-page__modal-title">Fahrzeug loeschen?</p>
+              <p className="profile-page__modal-text">
+                Bist du sicher, dass du dieses Fahrzeug unwiderruflich loeschen willst?
+              </p>
+              <MessageBox tone={deleteMessage?.tone}>{deleteMessage?.text}</MessageBox>
+              <div className="profile-page__modal-actions">
+                <button
+                  type="button"
+                  className="profile-page__cta profile-page__cta--ghost"
+                  onClick={() => setDeleteOpen(false)}
+                  disabled={deleting}
+                >
+                  Abbrechen
+                </button>
+                <button
+                  type="button"
+                  className="profile-page__cta"
+                  onClick={handleConfirmDelete}
+                  disabled={deleting}
+                >
+                  {deleting ? "Loeschen..." : "Fahrzeug loeschen"}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </section>
     </PageLayout>
   );

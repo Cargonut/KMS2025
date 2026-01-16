@@ -7,10 +7,12 @@ import AuthPage from "../pages/AuthPage";
 import CenterPage from "../pages/CenterPage";
 import DriverMenuPage from "../pages/DriverMenuPage";
 import PassengerMenuPage from "../pages/PassengerMenuPage";
+import PassengerOverviewPage from "../pages/PassengerOverviewPage";
 import ProfilePage from "../pages/ProfilePage";
 import TripPublicationPage from "../pages/TripPublicationPage";
 import VehicleEditorPage from "../pages/VehicleEditorPage";
 import VehiclesPage from "../pages/VehiclesPage";
+import MyTripsPage from "../pages/MyTripsPage";
 
 export const routes: RouteObject[] = [
   { path: "*", element: <LandingPage /> },
@@ -20,9 +22,11 @@ export const routes: RouteObject[] = [
   { path: "/auth", element: <AuthPage /> },
   { path: "/center", element: <CenterPage /> },
   { path: "/driver-menu", element: <DriverMenuPage /> },
+  { path: "/my-trips", element: <MyTripsPage /> },
   { path: "/trip-publication", element: <TripPublicationPage /> },
   { path: "/vehicle-editor", element: <VehicleEditorPage /> },
   { path: "/vehicles", element: <VehiclesPage /> },
   { path: "/passenger-menu", element: <PassengerMenuPage /> },
+  { path: "/passenger-overview", element: <PassengerOverviewPage /> },
   { path: "/profile", element: <ProfilePage /> },
 ];

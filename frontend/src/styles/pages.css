@@ -10,13 +10,14 @@
    5. Login page
    6. Driver menu page
    7. Passenger menu page
-   8. Trip publication page
-   9. Vehicle editor page
-   10. Vehicles page
-   11. Profile page
-   12. Signup page
-   13. Impressum page
-   14. Profile shortcut
+   8. Trips overview page
+   9. Trip publication page
+   10. Vehicle editor page
+   11. Vehicles page
+   12. Profile page
+   13. Signup page
+   14. Impressum page
+   15. Profile shortcut
    ========================================================================== */
 
 /* 1. Layout helpers */
@@ -333,6 +334,11 @@
 
 .driver-menu__input {
   background: #f4f7f6;
+  color: #2f3e38;
+}
+
+.driver-menu__input::placeholder {
+  color: rgba(47, 62, 56, 0.6);
 }
 
 .driver-menu__hint {
@@ -390,6 +396,10 @@
 
 .driver-menu__link,
 .passenger-menu__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
   border: none;
   background: transparent;
   color: var(--color-dark-blue);
@@ -480,6 +490,33 @@
   box-shadow: inset 0 0 0 1px rgba(60, 79, 71, 0.12);
 }
 
+.passenger-menu__result-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.passenger-menu__result-thumb {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f0f5f5;
+  color: #7b8b8a;
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+.passenger-menu__result-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .passenger-menu__result-route {
   margin: 0;
   font-size: 0.85rem;
@@ -493,12 +530,41 @@
   color: #52625d;
 }
 
+.passenger-menu__result-vehicle {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #52625d;
+}
+
 .passenger-menu__result-details {
   display: flex;
   gap: 0.5rem;
   font-size: 0.75rem;
   font-weight: 600;
   color: #2f3e38;
+}
+
+.passenger-menu__result-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.passenger-menu__result-cta {
+  border: none;
+  border-radius: 10px;
+  background: #3c4f47;
+  color: #f0f4f3;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+}
+
+.passenger-menu__result-cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .passenger-menu__result-empty {
@@ -527,7 +593,154 @@
   text-transform: uppercase;
 }
 
-/* 8. Trip publication page */
+/* 8. Trips overview page */
+.trips-page__panel {
+  width: 100%;
+  max-width: 360px;
+}
+
+.trips-page__card {
+  display: grid;
+  gap: 1rem;
+  padding: 1.4rem 1.2rem 1.6rem;
+  border-radius: 20px;
+  background: #d7d7d2;
+  box-shadow: 0 18px 30px rgba(0, 0, 0, 0.25);
+  color: var(--color-dark-blue);
+}
+
+.trips-page__header {
+  text-align: center;
+}
+
+.trips-page__title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.trips-page__divider {
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin: 0.35rem 0 0.2rem;
+  border-radius: 999px;
+  background: #6e7f7a;
+}
+
+.trips-page__subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #4a5b5a;
+}
+
+.trips-page__list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.trips-page__item {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 12px;
+  background: rgba(81, 84, 81, 0.12);
+}
+
+.trips-page__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.trips-page__route {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1f2a26;
+}
+
+.trips-page__meta {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #52625d;
+}
+
+.trips-page__vehicle {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #2f3e38;
+}
+
+.trips-page__details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #2f3e38;
+}
+
+.trips-page__delete {
+  border: 1px solid #3c4f47;
+  border-radius: 10px;
+  background: transparent;
+  color: #3c4f47;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.trips-page__delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.trips-page__empty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #52625d;
+  text-align: center;
+}
+
+.trips-page__notice {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0.9rem;
+  border-radius: 14px;
+  background: rgba(240, 245, 245, 0.92);
+  color: var(--color-dark-blue);
+  text-align: center;
+}
+
+.trips-page__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 14px;
+  background: #3c4f47;
+  color: var(--color-white);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.trips-page__cta--ghost {
+  background: transparent;
+  border: 1px solid #3c4f47;
+  color: var(--color-dark-blue);
+}
+
+/* 9. Trip publication page */
 .trip-publication__panel {
   width: 100%;
   max-width: 340px;
@@ -722,7 +935,7 @@
   margin-top: 1rem;
 }
 
-/* 9. Vehicle editor page */
+/* 10. Vehicle editor page */
 .vehicle-editor__panel {
   width: 100%;
   max-width: 360px;
@@ -949,7 +1162,7 @@
   text-align: center;
 }
 
-/* 10. Vehicles page */
+/* 11. Vehicles page */
 .vehicles-page__panel {
   width: 100%;
   max-width: 360px;
@@ -1125,7 +1338,7 @@
   text-align: center;
 }
 
-/* 11. Profile page */
+/* 12. Profile page */
 .profile-page__panel {
   position: relative;
   isolation: isolate;
@@ -1418,7 +1631,7 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-/* 12. Signup page */
+/* 13. Signup page */
 .signup {
   display: grid;
   place-items: center;
@@ -1428,7 +1641,7 @@
   --content-max: 680px;
 }
 
-/* 13. Impressum page */
+/* 14. Impressum page */
 .impressum__details {
   line-height: 1.6;
 }
@@ -1443,7 +1656,7 @@
   justify-content: center;
 }
 
-/* 14. Profile shortcut */
+/* 15. Profile shortcut */
 .profile-shortcut {
   position: fixed;
   top: 1.25rem;

@@ -8,6 +8,7 @@ import { UserModule } from './core/user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TripModule } from './core/trip/trip.module';
 import { VehicleModule } from './core/vehicle/vehicle.module';
+import { TripPassengerModule } from './core/trip-passenger/trip-passenger.module';
 import { UploadModule } from './api/rest/upload.module';
 
 @Module({
@@ -16,6 +17,7 @@ import { UploadModule } from './api/rest/upload.module';
     UserModule,
     AuthModule,
     TripModule,
+    TripPassengerModule,
     VehicleModule,
     UploadModule,
 

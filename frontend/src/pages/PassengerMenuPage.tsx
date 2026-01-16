@@ -1,75 +1,121 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Trip, bookTrip, fetchMyTripBookings, fetchTrips } from "../app/api";
 import Logo from "../components/Logo";
 import ProfileAvatar from "../components/ProfileAvatar";
 import { PageFooter, PageLayout } from "../components/PageLayout";
+import MessageBox from "../components/ui/MessageBox";
 
-type Offer = {
-  id: number;
-  from: string;
-  to: string;
-  date: string;
-  time: string;
-  price: string;
-  seats: number;
+const storageKey = "cargonaut-token";
+
+const formatTripDate = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const pad = (part: number) => String(part).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
 };
 
+const formatTripTime = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "--:--";
+  return date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+};
 
-const MOCK_OFFERS: Offer[] = [
-  {
-    id: 1,
-    from: "35390 Gießen, Bahnhofstraße 1",
-    to: "60326 Frankfurt, Hauptbahnhof",
-    date: "2025-01-19",
-    time: "08:15",
-    price: "9,50 €",
-    seats: 2,
-  },
-  {
-    id: 2,
-    from: "35390 Gießen, Marktplatz",
-    to: "60311 Frankfurt, Römerberg",
-    date: "2025-01-19",
-    time: "10:45",
-    price: "11,00 €",
-    seats: 3,
-  },
-  {
-    id: 3,
-    from: "35578 Wetzlar, Domplatz",
-    to: "65183 Wiesbaden, Schlossplatz",
-    date: "2025-01-20",
-    time: "09:00",
-    price: "12,50 €",
-    seats: 1,
-  },
-  {
-    id: 4,
-    from: "60326 Frankfurt, Hauptbahnhof",
-    to: "60549 Frankfurt, Flughafen",
-    date: "2025-01-19",
-    time: "14:30",
-    price: "6,00 €",
-    seats: 4,
-  },
-];
+const formatPrice = (value: number | null | undefined) => {
+  if (typeof value !== "number" || !Number.isFinite(value)) return "k.A.";
+  return `${value.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR`;
+};
+
+const formatSeats = (value: number | null | undefined) => {
+  if (typeof value !== "number" || !Number.isFinite(value)) return "Plaetze k.A.";
+  return `${value} Plaetze`;
+};
+
+const formatMotorType = (value: string | null | undefined) => {
+  if (!value) return "Motor: k.A.";
+  return `Motor: ${value.charAt(0).toUpperCase()}${value.slice(1)}`;
+};
+
+const formatLoad = (value: number | null | undefined) => {
+  if (typeof value !== "number" || !Number.isFinite(value)) return "Zuladung: k.A.";
+  return `Zuladung: ${value} kg`;
+};
 
 export default function PassengerMenuPage() {
+  const [token, setToken] = useState(() => localStorage.getItem(storageKey) || "");
   const [fromInput, setFromInput] = useState("");
   const [toInput, setToInput] = useState("");
   const [dateInput, setDateInput] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
-  const [results, setResults] = useState<Offer[]>([]);
+  const [offers, setOffers] = useState<Trip[]>([]);
+  const [results, setResults] = useState<Trip[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ tone: "error" | "info" | "success"; text: string }>();
+  const [bookedTripIds, setBookedTripIds] = useState<number[]>([]);
+  const [bookingTripId, setBookingTripId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const handleAuthChange = () => {
+      setToken(localStorage.getItem(storageKey) || "");
+    };
+    window.addEventListener("auth-changed", handleAuthChange);
+    return () => window.removeEventListener("auth-changed", handleAuthChange);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    setMessage(undefined);
+    fetchTrips()
+      .then((data) => {
+        if (!active) return;
+        const filtered = data.filter((trip) => trip.type === "angebot" && trip.is_active);
+        setOffers(filtered);
+      })
+      .catch((err: Error) => {
+        if (!active) return;
+        setMessage({ tone: "error", text: err.message });
+      })
+      .finally(() => {
+        if (!active) return;
+        setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!token) {
+      setBookedTripIds([]);
+      return;
+    }
+    let active = true;
+    fetchMyTripBookings(token)
+      .then((data) => {
+        if (!active) return;
+        setBookedTripIds(data.map((entry) => entry.trip_id));
+      })
+      .catch((err: Error) => {
+        if (!active) return;
+        setMessage({ tone: "error", text: err.message });
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [token]);
 
   const handleSearch = () => {
-    const filtered = MOCK_OFFERS.filter((offer) => {
-      const matchesFrom = fromInput
-          ? offer.from.toLowerCase().includes(fromInput.toLowerCase())
-          : true;
-      const matchesTo = toInput
-          ? offer.to.toLowerCase().includes(toInput.toLowerCase())
-          : true;
-      const matchesDate = dateInput ? offer.date === dateInput : true;
-
+    const fromQuery = fromInput.trim().toLowerCase();
+    const toQuery = toInput.trim().toLowerCase();
+    const filtered = offers.filter((trip) => {
+      const fromValue = trip.from_location?.toLowerCase() ?? "";
+      const toValue = trip.to_location?.toLowerCase() ?? "";
+      const matchesFrom = fromQuery ? fromValue.includes(fromQuery) : true;
+      const matchesTo = toQuery ? toValue.includes(toQuery) : true;
+      const matchesDate = dateInput ? formatTripDate(trip.start_date) === dateInput : true;
       return matchesFrom && matchesTo && matchesDate;
     });
 
@@ -77,6 +123,24 @@ export default function PassengerMenuPage() {
     setHasSearched(true);
   };
 
+  const handleBook = async (tripId: number) => {
+    if (!token) {
+      setMessage({ tone: "error", text: "Bitte zuerst einloggen." });
+      return;
+    }
+    setBookingTripId(tripId);
+    setMessage(undefined);
+    try {
+      await bookTrip(tripId, token);
+      setBookedTripIds((prev) => (prev.includes(tripId) ? prev : [...prev, tripId]));
+      setMessage({ tone: "success", text: "Fahrt gebucht." });
+    } catch (err) {
+      const text = err instanceof Error ? err.message : "Unbekannter Fehler.";
+      setMessage({ tone: "error", text });
+    } finally {
+      setBookingTripId(null);
+    }
+  };
 
   return (
     <PageLayout variant="center" className="page-theme page-theme--passenger">
@@ -107,7 +171,6 @@ export default function PassengerMenuPage() {
                   onChange={(event) => setFromInput(event.target.value)}
                 />
               </div>
-
             </div>
 
             <div className="stack stack--xs passenger-menu__field">
@@ -121,7 +184,6 @@ export default function PassengerMenuPage() {
                   onChange={(event) => setToInput(event.target.value)}
                 />
               </div>
-             
             </div>
 
             <div className="stack stack--xs">
@@ -141,23 +203,49 @@ export default function PassengerMenuPage() {
             </button>
           </div>
 
+          <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
+
           <div className="passenger-menu__results stack stack--xs">
             <p className="passenger-menu__results-title">ANGEBOTE</p>
-            {hasSearched ? (
+            {loading ? (
+              <p className="passenger-menu__result-empty">Angebote werden geladen...</p>
+            ) : hasSearched ? (
               results.length > 0 ? (
-                results.map((offer) => (
-                  <article key={offer.id} className="passenger-menu__result-card">
-                    <div>
-                      <p className="passenger-menu__result-route">
-                        {offer.from} → {offer.to}
-                      </p>
-                      <p className="passenger-menu__result-meta">
-                        {offer.date} · {offer.time}
-                      </p>
+                results.map((trip) => (
+                  <article key={trip.id} className="passenger-menu__result-card">
+                    <div className="passenger-menu__result-head">
+                      <div className="passenger-menu__result-thumb">
+                        {trip.vehicle?.image_urls?.[0] ? (
+                          <img src={trip.vehicle.image_urls[0]} alt="Fahrzeug" />
+                        ) : (
+                          <span>Bild</span>
+                        )}
+                      </div>
+                      <div>
+                        <p className="passenger-menu__result-route">
+                          {trip.from_location} - {trip.to_location}
+                        </p>
+                        <p className="passenger-menu__result-meta">
+                          {formatTripDate(trip.start_date) || "--"} {formatTripTime(trip.start_date)}
+                        </p>
+                        <p className="passenger-menu__result-vehicle">
+                          {formatMotorType(trip.vehicle?.motor_type)} - {formatLoad(trip.vehicle?.weight)}
+                        </p>
+                      </div>
                     </div>
                     <div className="passenger-menu__result-details">
-                      <span>{offer.price}</span>
-                      <span>{offer.seats} Plätze</span>
+                      <span>{formatPrice(trip.price)}</span>
+                      <span>{formatSeats(trip.seats)}</span>
+                    </div>
+                    <div className="passenger-menu__result-actions">
+                      <button
+                        type="button"
+                        className="passenger-menu__result-cta"
+                        onClick={() => handleBook(trip.id)}
+                        disabled={bookingTripId === trip.id || bookedTripIds.includes(trip.id)}
+                      >
+                        {bookedTripIds.includes(trip.id) ? "GEBUCHT" : bookingTripId === trip.id ? "BUCHEN..." : "BUCHEN"}
+                      </button>
                     </div>
                   </article>
                 ))
@@ -167,16 +255,14 @@ export default function PassengerMenuPage() {
                 </p>
               )
             ) : (
-              <p className="passenger-menu__result-empty">
-                Suche starten, um verfügbare Fahrten anzuzeigen.
-              </p>
+              <p className="passenger-menu__result-empty">Suche starten, um verfuegbare Fahrten anzuzeigen.</p>
             )}
           </div>
 
           <div className="stack stack--sm">
-            <button type="button" className="passenger-menu__link">
+            <Link to="/passenger-overview" className="passenger-menu__link">
               UBERSICHT
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -185,3 +271,5 @@ export default function PassengerMenuPage() {
     </PageLayout>
   );
 }
+
+

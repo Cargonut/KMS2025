@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { CreateTripInput, Vehicle, createTrip, fetchMyVehicles } from "../app/api";
 import Logo from "../components/Logo";
 import { PageFooter, PageLayout } from "../components/PageLayout";
@@ -17,18 +17,42 @@ const formatDateTimeLocal = (date: Date) => {
 };
 
 export default function TripPublicationPage() {
+  const [searchParams] = useSearchParams();
+  const queryFrom = searchParams.get("from") ?? "";
+  const queryTo = searchParams.get("to") ?? "";
   const [token, setToken] = useState<string>(() => localStorage.getItem(storageKey) || "");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: "success" | "error" | "info"; text: string }>();
-  const [form, setForm] = useState<CreateTripInput>({
+  const [form, setForm] = useState<CreateTripInput>(() => ({
     type: "angebot",
-    from_location: "",
-    to_location: "",
+    from_location: queryFrom,
+    to_location: queryTo,
     start_date: new Date().toISOString(),
-  });
+  }));
   const [startDateLocal, setStartDateLocal] = useState(formatDateTimeLocal(new Date()));
+  const [priceInput, setPriceInput] = useState("");
+  const [seatsInput, setSeatsInput] = useState("");
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!queryFrom && !queryTo) {
+      return;
+    }
+    setForm((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      if (queryFrom && !prev.from_location) {
+        next.from_location = queryFrom;
+        changed = true;
+      }
+      if (queryTo && !prev.to_location) {
+        next.to_location = queryTo;
+        changed = true;
+      }
+      return changed ? next : prev;
+    });
+  }, [queryFrom, queryTo]);
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -48,7 +72,8 @@ export default function TripPublicationPage() {
       .then((data) => {
         setVehicles(data);
         if (data.length > 0) {
-          setSelectedVehicleId((current) => current ?? data[0]?.id ?? null);
+          const firstId = Number(data[0]?.id);
+          setSelectedVehicleId((current) => current ?? (Number.isFinite(firstId) ? firstId : null));
         }
       })
       .catch((err: Error) => {
@@ -61,7 +86,10 @@ export default function TripPublicationPage() {
   }, [refreshVehicles]);
 
   const selectedVehicle = useMemo(
-    () => vehicles.find((vehicle) => vehicle.id === selectedVehicleId) ?? null,
+    () =>
+      selectedVehicleId === null
+        ? null
+        : vehicles.find((vehicle) => Number(vehicle.id) === selectedVehicleId) ?? null,
     [selectedVehicleId, vehicles],
   );
 
@@ -87,11 +115,23 @@ export default function TripPublicationPage() {
       if (Number.isNaN(startDate.getTime())) {
         throw new Error("Bitte ein gueltiges Startdatum waehlen.");
       }
+      const normalizedPrice = priceInput.replace(",", ".").trim();
+      const price = normalizedPrice ? Number(normalizedPrice) : undefined;
+      if (normalizedPrice && (Number.isNaN(price) || price < 0)) {
+        throw new Error("Bitte einen gueltigen Preis angeben.");
+      }
+      const normalizedSeats = seatsInput.trim();
+      const seats = normalizedSeats ? Number(normalizedSeats) : undefined;
+      if (normalizedSeats && (!Number.isFinite(seats) || seats <= 0)) {
+        throw new Error("Bitte gueltige Sitzplaetze angeben.");
+      }
       const payload: CreateTripInput = {
         ...form,
         type: "angebot",
         start_date: startDate.toISOString(),
-        vehicle_id: selectedVehicle?.id ?? undefined,
+        vehicle_id: selectedVehicle ? Number(selectedVehicle.id) : undefined,
+        price,
+        seats,
       };
       await createTrip(payload, token);
       setMessage({ tone: "success", text: "Angebot wurde gespeichert." });
@@ -100,6 +140,8 @@ export default function TripPublicationPage() {
         from_location: "",
         to_location: "",
       }));
+      setPriceInput("");
+      setSeatsInput("");
     } catch (err) {
       const text = err instanceof Error ? err.message : "Unbekannter Fehler.";
       setMessage({ tone: "error", text });
@@ -156,13 +198,42 @@ export default function TripPublicationPage() {
               />
             </label>
 
+            <label className="field field--tight">
+              <span className="trip-publication__label">PREIS (EUR)</span>
+              <input
+                className="field__control trip-publication__input"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="z. B. 12.50"
+                value={priceInput}
+                onChange={(event) => setPriceInput(event.target.value)}
+              />
+            </label>
+
+            <label className="field field--tight">
+              <span className="trip-publication__label">SITZPLAETZE</span>
+              <input
+                className="field__control trip-publication__input"
+                type="number"
+                min="1"
+                step="1"
+                placeholder="z. B. 3"
+                value={seatsInput}
+                onChange={(event) => setSeatsInput(event.target.value)}
+              />
+            </label>
+
             {vehicles.length > 0 ? (
               <label className="field field--tight">
                 <span className="trip-publication__label">FAHRZEUG</span>
                 <select
                   className="field__control trip-publication__input"
                   value={selectedVehicleId ?? undefined}
-                  onChange={(event) => setSelectedVehicleId(Number(event.target.value))}
+                  onChange={(event) => {
+                    const nextId = Number(event.target.value);
+                    setSelectedVehicleId(Number.isFinite(nextId) ? nextId : null);
+                  }}
                 >
                   {vehicles.map((vehicle) => (
                     <option key={vehicle.id} value={vehicle.id}>
@@ -204,7 +275,7 @@ export default function TripPublicationPage() {
           </form>
 
           <div className="trip-publication__links">
-            <Link to="/vehicle-editor" className="trip-publication__link">
+            <Link to="/vehicles" className="trip-publication__link">
               FAHRZEUGE VERWALTEN
             </Link>
             <Link to="/profile" className="trip-publication__link">
