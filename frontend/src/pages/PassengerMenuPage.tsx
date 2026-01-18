@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Trip, bookTrip, fetchMyTripBookings, fetchTrips } from "../app/api";
+import { isValidPlzInput, normalizePlzInput } from "../app/plz";
 import Logo from "../components/Logo";
 import ProfileAvatar from "../components/ProfileAvatar";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 import MessageBox from "../components/ui/MessageBox";
+import usePlzSuggestions from "../hooks/usePlzSuggestions";
 
 const storageKey = "cargonaut-token";
 
@@ -51,8 +53,11 @@ export default function PassengerMenuPage() {
   const [results, setResults] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ tone: "error" | "info" | "success"; text: string }>();
+  const [inputError, setInputError] = useState<string | null>(null);
   const [bookedTripIds, setBookedTripIds] = useState<number[]>([]);
   const [bookingTripId, setBookingTripId] = useState<number | null>(null);
+  const fromSuggestions = usePlzSuggestions(fromInput);
+  const toSuggestions = usePlzSuggestions(toInput);
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -107,9 +112,32 @@ export default function PassengerMenuPage() {
     };
   }, [token]);
 
-  const handleSearch = () => {
-    const fromQuery = fromInput.trim().toLowerCase();
-    const toQuery = toInput.trim().toLowerCase();
+  const handleSearch = async () => {
+    setInputError(null);
+    const fromValue = normalizePlzInput(fromInput);
+    const toValue = normalizePlzInput(toInput);
+    if (!fromValue || !toValue) {
+      setInputError("Bitte Von und Nach als PLZ + Stadt angeben.");
+      return;
+    }
+    try {
+      const [fromValid, toValid] = await Promise.all([
+        isValidPlzInput(fromValue),
+        isValidPlzInput(toValue),
+      ]);
+      if (!fromValid || !toValid) {
+        setInputError("Bitte PLZ und Stadt aus der Liste wählen.");
+        return;
+      }
+    } catch (err) {
+      const text = err instanceof Error ? err.message : "PLZ-Daten konnten nicht geladen werden.";
+      setInputError(text);
+      return;
+    }
+    setFromInput(fromValue);
+    setToInput(toValue);
+    const fromQuery = fromValue.toLowerCase();
+    const toQuery = toValue.toLowerCase();
     const filtered = offers.filter((trip) => {
       const fromValue = trip.from_location?.toLowerCase() ?? "";
       const toValue = trip.to_location?.toLowerCase() ?? "";
@@ -121,6 +149,16 @@ export default function PassengerMenuPage() {
 
     setResults(filtered);
     setHasSearched(true);
+  };
+
+  const selectFrom = (value: string) => {
+    setFromInput(normalizePlzInput(value));
+    setInputError(null);
+  };
+
+  const selectTo = (value: string) => {
+    setToInput(normalizePlzInput(value));
+    setInputError(null);
   };
 
   const handleBook = async (tripId: number) => {
@@ -160,30 +198,66 @@ export default function PassengerMenuPage() {
             <p className="passenger-menu__offer-title">Suchen</p>
             <span className="passenger-menu__offer-divider" aria-hidden="true" />
 
-            <div className="stack stack--xs passenger-menu__field">
+            <div className="stack stack--xs passenger-menu__field plz-field">
               <p className="passenger-menu__field-label">Von</p>
               <div className="passenger-menu__field-box">
                 <input
                   className="passenger-menu__input"
                   type="text"
-                  placeholder="Adresse eingeben"
+                  placeholder="PLZ Stadt eingeben"
                   value={fromInput}
-                  onChange={(event) => setFromInput(event.target.value)}
+                  onChange={(event) => {
+                    setFromInput(event.target.value);
+                    setInputError(null);
+                  }}
                 />
               </div>
+              {fromSuggestions.length > 0 ? (
+                <ul className="plz-suggestions" role="listbox">
+                  {fromSuggestions.map((entry) => (
+                    <li key={`${entry.plz}-${entry.ort}`}>
+                      <button
+                        type="button"
+                        className="plz-suggestion"
+                        onClick={() => selectFrom(entry.label)}
+                      >
+                        {entry.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
 
-            <div className="stack stack--xs passenger-menu__field">
+            <div className="stack stack--xs passenger-menu__field plz-field">
               <p className="passenger-menu__field-label">Nach</p>
               <div className="passenger-menu__field-box">
                 <input
                   className="passenger-menu__input"
                   type="text"
-                  placeholder="Adresse eingeben"
+                  placeholder="PLZ Stadt eingeben"
                   value={toInput}
-                  onChange={(event) => setToInput(event.target.value)}
+                  onChange={(event) => {
+                    setToInput(event.target.value);
+                    setInputError(null);
+                  }}
                 />
               </div>
+              {toSuggestions.length > 0 ? (
+                <ul className="plz-suggestions" role="listbox">
+                  {toSuggestions.map((entry) => (
+                    <li key={`${entry.plz}-${entry.ort}`}>
+                      <button
+                        type="button"
+                        className="plz-suggestion"
+                        onClick={() => selectTo(entry.label)}
+                      >
+                        {entry.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
 
             <div className="stack stack--xs">
@@ -197,6 +271,8 @@ export default function PassengerMenuPage() {
                 />
               </div>
             </div>
+
+            {inputError ? <MessageBox tone="error">{inputError}</MessageBox> : null}
 
             <button type="button" className="passenger-menu__cta" onClick={handleSearch}>
               Suchen

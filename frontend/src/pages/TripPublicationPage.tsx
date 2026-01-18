@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { CreateTripInput, Vehicle, createTrip, fetchMyVehicles } from "../app/api";
+import { isValidPlzInput, normalizePlzInput } from "../app/plz";
 import Logo from "../components/Logo";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 import ProfileAvatar from "../components/ProfileAvatar";
 import MessageBox from "../components/ui/MessageBox";
+import usePlzSuggestions from "../hooks/usePlzSuggestions";
 
 const storageKey = "cargonaut-token";
 
@@ -33,6 +35,8 @@ export default function TripPublicationPage() {
   const [priceInput, setPriceInput] = useState("");
   const [seatsInput, setSeatsInput] = useState("");
   const [selectedVehicleId, setSelectedVehicleId] = useState<number | null>(null);
+  const fromSuggestions = usePlzSuggestions(form.from_location ?? "");
+  const toSuggestions = usePlzSuggestions(form.to_location ?? "");
 
   useEffect(() => {
     if (!queryFrom && !queryTo) {
@@ -106,6 +110,14 @@ export default function TripPublicationPage() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const selectFrom = (value: string) => {
+    handleChange("from_location", normalizePlzInput(value));
+  };
+
+  const selectTo = (value: string) => {
+    handleChange("to_location", normalizePlzInput(value));
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!token) {
@@ -115,8 +127,17 @@ export default function TripPublicationPage() {
     setBusy(true);
     setMessage(undefined);
     try {
-      if (!form.from_location || !form.to_location) {
+      const fromValue = normalizePlzInput(form.from_location ?? "");
+      const toValue = normalizePlzInput(form.to_location ?? "");
+      if (!fromValue || !toValue) {
         throw new Error("Bitte Start und Ziel angeben.");
+      }
+      const [fromValid, toValid] = await Promise.all([
+        isValidPlzInput(fromValue),
+        isValidPlzInput(toValue),
+      ]);
+      if (!fromValid || !toValid) {
+        throw new Error("Bitte PLZ und Stadt aus der Liste wählen.");
       }
       if (!selectedVehicle) {
         throw new Error("Bitte zuerst ein Fahrzeug auswählen.");
@@ -141,6 +162,8 @@ export default function TripPublicationPage() {
       const payload: CreateTripInput = {
         ...form,
         type: "angebot",
+        from_location: fromValue,
+        to_location: toValue,
         start_date: startDate.toISOString(),
         vehicle_id: selectedVehicle ? Number(selectedVehicle.id) : undefined,
         price,
@@ -179,26 +202,56 @@ export default function TripPublicationPage() {
             <p className="trip-publication__title">{title}</p>
             <span className="trip-publication__divider" aria-hidden="true" />
 
-            <label className="field field--tight">
+            <label className="field field--tight plz-field">
               <span className="trip-publication__label">Von</span>
               <input
                 className="field__control trip-publication__input"
                 name="from_location"
-                placeholder="Startadresse eingeben"
+                placeholder="PLZ Stadt eingeben"
                 value={form.from_location}
                 onChange={(event) => handleChange("from_location", event.target.value)}
               />
+              {fromSuggestions.length > 0 ? (
+                <ul className="plz-suggestions" role="listbox">
+                  {fromSuggestions.map((entry) => (
+                    <li key={`${entry.plz}-${entry.ort}`}>
+                      <button
+                        type="button"
+                        className="plz-suggestion"
+                        onClick={() => selectFrom(entry.label)}
+                      >
+                        {entry.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </label>
 
-            <label className="field field--tight">
+            <label className="field field--tight plz-field">
               <span className="trip-publication__label">Nach</span>
               <input
                 className="field__control trip-publication__input"
                 name="to_location"
-                placeholder="Zieladresse eingeben"
+                placeholder="PLZ Stadt eingeben"
                 value={form.to_location}
                 onChange={(event) => handleChange("to_location", event.target.value)}
               />
+              {toSuggestions.length > 0 ? (
+                <ul className="plz-suggestions" role="listbox">
+                  {toSuggestions.map((entry) => (
+                    <li key={`${entry.plz}-${entry.ort}`}>
+                      <button
+                        type="button"
+                        className="plz-suggestion"
+                        onClick={() => selectTo(entry.label)}
+                      >
+                        {entry.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </label>
 
             <label className="field field--tight">
