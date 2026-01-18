@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Trip, bookTrip, fetchMyTripBookings, fetchTrips } from "../app/api";
+import { fetchProfile, Profile, Trip, bookTrip, fetchMyTripBookings, fetchTrips, updateBalance } from "../app/api";
 import { isValidPlzInput, normalizePlzInput } from "../app/plz";
 import Logo from "../components/Logo";
 import ProfileAvatar from "../components/ProfileAvatar";
@@ -58,6 +58,56 @@ export default function PassengerMenuPage() {
   const [bookingTripId, setBookingTripId] = useState<number | null>(null);
   const fromSuggestions = usePlzSuggestions(fromInput);
   const toSuggestions = usePlzSuggestions(toInput);
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    if (!token) {
+      setProfile(null);
+      return;
+    }
+    fetchProfile(token)
+      .then(setProfile)
+      .catch((err) => console.error("Profil-Fehler:", err));
+  }, [token]);
+
+  const handleBook = async (tripId: number) => {
+    if (!token) {
+      setMessage({ tone: "error", text: "Bitte zuerst anmelden." });
+      return;
+    }
+    const selectedTrip = offers.find((t) => t.id === tripId);
+    const price = selectedTrip?.price ?? 0;
+    if (profile && typeof profile.balance === "number" && profile.balance < price) {
+      setMessage({
+        tone: "error",
+        text: `Guthaben nicht ausreichend. Preis: ${formatPrice(price)}. Dein Stand: ${formatPrice(profile.balance)}.`,
+      });
+      return;
+    }
+    updateBalance(price,token)
+    setBookingTripId(tripId);
+    setMessage(undefined);
+    try {
+      // 3. Die eigentliche Buchung (Backend zieht Geld ab)
+      await bookTrip(tripId, token);
+
+      // 4. Profil SEPARAT neu laden, um die neue Balance zu erhalten
+      const updatedProfile = await fetchProfile(token);
+      setProfile(updatedProfile); // Aktualisiert die Anzeige im Frontend
+
+      setBookedTripIds((prev) => (prev.includes(tripId) ? prev : [...prev, tripId]));
+      setMessage({ tone: "success", text: "Fahrt erfolgreich gebucht!" });
+
+      // Optional: Signal an andere Komponenten
+      window.dispatchEvent(new Event("profile-updated"));
+    } catch (err) {
+      const text = err instanceof Error ? err.message : "Fehler bei der Buchung.";
+      setMessage({ tone: "error", text });
+    } finally {
+      setBookingTripId(null);
+    }
+  };
+
 
   useEffect(() => {
     const handleAuthChange = () => {
@@ -161,24 +211,6 @@ export default function PassengerMenuPage() {
     setInputError(null);
   };
 
-  const handleBook = async (tripId: number) => {
-    if (!token) {
-      setMessage({ tone: "error", text: "Bitte zuerst anmelden." });
-      return;
-    }
-    setBookingTripId(tripId);
-    setMessage(undefined);
-    try {
-      await bookTrip(tripId, token);
-      setBookedTripIds((prev) => (prev.includes(tripId) ? prev : [...prev, tripId]));
-      setMessage({ tone: "success", text: "Fahrt gebucht." });
-    } catch (err) {
-      const text = err instanceof Error ? err.message : "Unbekannter Fehler.";
-      setMessage({ tone: "error", text });
-    } finally {
-      setBookingTripId(null);
-    }
-  };
 
   return (
     <PageLayout variant="center" className="page-theme page-theme--passenger">

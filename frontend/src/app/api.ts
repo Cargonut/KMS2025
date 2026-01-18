@@ -183,6 +183,7 @@ export async function updateProfile(data: UpdateProfileInput, token: string): Pr
 }
 
 export async function updateBalance(amount: number, token: string): Promise<Profile> {
+  const negativeAmount = amount > 0 ? -amount : amount;
   const result = await graphqlRequest<{ updateBalance: Profile }>(
     `mutation UpdateBalance($amount: Float!) {
       updateBalance(amount: $amount) {
@@ -193,7 +194,7 @@ export async function updateBalance(amount: number, token: string): Promise<Prof
         email
       }
     }`,
-    { amount },
+    { amount: negativeAmount },
     token,
   );
   return result.updateBalance;
@@ -410,24 +411,28 @@ export async function fetchMyTripBookings(token: string): Promise<TripPassenger[
   return result.myTripBookings ?? [];
 }
 
-export async function bookTrip(tripId: number | string, token: string): Promise<TripPassenger> {
+export async function bookTrip(
+  tripId: number | string,
+  token: string,
+): Promise<TripPassenger> {
   const numericId = typeof tripId === "string" ? Number(tripId) : tripId;
   if (!Number.isFinite(numericId)) {
     throw new Error("Ungültige Fahrt-ID.");
   }
+
   const result = await graphqlRequest<{ bookTrip: TripPassenger }>(
     `mutation BookTrip($tripId: Int!) {
       bookTrip(tripId: $tripId) {
         id
         trip_id
         passenger_id
-        joined_at
         status
       }
     }`,
     { tripId: numericId },
     token,
   );
+
   return result.bookTrip;
 }
 
