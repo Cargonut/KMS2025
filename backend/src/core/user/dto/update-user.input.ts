@@ -1,5 +1,5 @@
-import { InputType, Field, GraphQLISODateTime } from '@nestjs/graphql';
-import { IsOptional, IsString, IsDate } from 'class-validator';
+import { InputType, Field, GraphQLISODateTime, Float } from '@nestjs/graphql';
+import { IsOptional, IsString, IsDate, IsNumber, Min } from 'class-validator';
 
 @InputType()
 export class UpdateUserInput {
@@ -33,4 +33,10 @@ export class UpdateUserInput {
   @IsOptional()
   @IsString()
   additional_note?: string;
+
+  @Field(() => Float, { nullable: true })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  balance?: number;
 }

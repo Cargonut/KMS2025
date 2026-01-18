@@ -33,6 +33,9 @@ export class User {
   @Field({ nullable: true })
   created_at: Date;
 
+  @Field(() => Number, { nullable: true })
+  balance?: number;
+
   @Field(() => [Trip], { nullable: true })
   trips?: Trip[];
 

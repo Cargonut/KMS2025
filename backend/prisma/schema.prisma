@@ -19,6 +19,7 @@ model User {
   profile_image                 String?
   id                            Int                   @id @default(autoincrement())
   passwordHash                  String
+  balance                       Float                 @default(0)
   trips                         Trip[]
   passengers                    TripPassenger[]
   ratings_given_as_driver       TripRatingDriver[]    @relation("DriverRatings")
@@ -102,8 +103,22 @@ model TripPassenger {
   status       PassengerStatus @default(zugesagt)
   passenger    User            @relation(fields: [passenger_id], references: [id])
   trip         Trip            @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+  payments     Payment[]
 
   @@unique([trip_id, passenger_id])
+}
+
+model Payment {
+  id                Int             @id @default(autoincrement())
+  trip_passenger_id Int
+  amount            Float
+  status            PaymentStatus    @default(ausstehend)
+  payment_method    String?
+  transaction_id    String?          @unique
+  paid_at           DateTime?
+  created_at        DateTime         @default(now())
+  updated_at        DateTime         @updatedAt
+  trip_passenger    TripPassenger    @relation(fields: [trip_passenger_id], references: [id], onDelete: Cascade)
 }
 
 model TripTracking {
@@ -134,4 +149,11 @@ enum MotorType {
   elektro
   gas
   sonstiges
+}
+
+enum PaymentStatus {
+  ausstehend
+  bezahlt
+  storniert
+  fehlgeschlagen
 }

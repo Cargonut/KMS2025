@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID, Int } from '@nestjs/graphql';
 import { User } from '../../user/entities/user.entity';
 import { Trip } from '../../trip/entities/trip.entity';
+import { Payment } from '../../payment/entities/payment.entity';
 
 @ObjectType()
 export class TripPassenger {
@@ -24,4 +25,7 @@ export class TripPassenger {
 
   @Field(() => User, { nullable: true })
   passenger?: User;
+
+  @Field(() => [Payment], { nullable: true })
+  payments?: Payment[];
 }

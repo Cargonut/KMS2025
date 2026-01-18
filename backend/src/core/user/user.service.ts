@@ -98,4 +98,48 @@ export class UserService {
       data: { passwordHash: newHash },
     });
   }
+
+  // --------------------------------------------------------
+  // UPDATE BALANCE
+  // --------------------------------------------------------
+  async updateBalance(userId: number, amount: number) {
+    const user = await this.findOne(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    const newBalance = (user.balance || 0) + amount;
+    if (newBalance < 0) {
+      throw new Error('Guthaben kann nicht negativ sein.');
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { balance: newBalance },
+    });
+  }
+
+  // --------------------------------------------------------
+  // SET BALANCE (absoluter Wert)
+  // --------------------------------------------------------
+  async setBalance(userId: number, balance: number) {
+    const user = await this.findOne(userId);
+    if (!user) throw new NotFoundException('User not found');
+
+    if (balance < 0) {
+      throw new Error('Guthaben kann nicht negativ sein.');
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { balance },
+    });
+  }
+
+  // --------------------------------------------------------
+  // GET BALANCE
+  // --------------------------------------------------------
+  async getBalance(userId: number) {
+    const user = await this.findOne(userId);
+    if (!user) throw new NotFoundException('User not found');
+    return user.balance || 0;
+  }
 }

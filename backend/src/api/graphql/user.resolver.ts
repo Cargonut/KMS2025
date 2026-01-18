@@ -114,4 +114,28 @@ export class UserResolver {
 
     return true;
   }
+
+  // -------------------------------
+  // UPDATE BALANCE
+  // -------------------------------
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => User)
+  async updateBalance(
+    @CurrentUser() user: User,
+    @Args('amount', { type: () => Number }) amount: number,
+  ) {
+    return this.userService.updateBalance(user.id, amount);
+  }
+
+  // -------------------------------
+  // SET BALANCE
+  // -------------------------------
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => User)
+  async setBalance(
+    @CurrentUser() user: User,
+    @Args('balance', { type: () => Number }) balance: number,
+  ) {
+    return this.userService.setBalance(user.id, balance);
+  }
 }

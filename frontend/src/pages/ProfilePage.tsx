@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChangeEvent, PointerEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { deleteMe, fetchProfile, Profile, updateProfile, uploadProfileImage } from "../app/api";
+import { deleteMe, fetchProfile, Profile, setBalance, updateProfile, uploadProfileImage } from "../app/api";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 import MessageBox from "../components/ui/MessageBox";
 import type { Message } from "../features/types";
@@ -38,6 +38,9 @@ export default function ProfilePage() {
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteMessage, setDeleteMessage] = useState<Message>();
   const [deleting, setDeleting] = useState(false);
+  const [balanceInput, setBalanceInput] = useState("");
+  const [balanceMessage, setBalanceMessage] = useState<Message>();
+  const [updatingBalance, setUpdatingBalance] = useState(false);
 
   const loadProfile = useCallback(async () => {
     if (!token) return;
@@ -309,6 +312,18 @@ export default function ProfilePage() {
           {error && <MessageBox tone="error">{error}</MessageBox>}
           {busy && !profile && <p className="profile-page__hint">Lade Profil...</p>}
 
+          {/* Guthaben-Anzeige - Prominent */}
+          {profile && (
+            <div className="profile-page__balance-display">
+              <span className="profile-page__balance-label">Aktuelles Guthaben</span>
+              <div className="profile-page__balance-value">
+                {typeof profile.balance === "number"
+                  ? `${profile.balance.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR`
+                  : "0,00 EUR"}
+              </div>
+            </div>
+          )}
+
           <div className="profile-page__grid profile-page__grid--two">
             <div className="profile-page__field">
               <span className="profile-page__label">Vorname</span>
@@ -344,6 +359,57 @@ export default function ProfilePage() {
               <span className="profile-page__label">Passwort wiederholen</span>
               <div className="profile-page__value">************</div>
             </div>
+          </div>
+
+          <div className="profile-page__balance-section stack stack--sm">
+            <label className="profile-page__field">
+              <span className="profile-page__label">Guthaben aufladen</span>
+              <input
+                className="profile-page__input"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Betrag eingeben (z.B. 50.00)"
+                value={balanceInput}
+                onChange={(event) => setBalanceInput(event.target.value)}
+                disabled={updatingBalance}
+              />
+            </label>
+            <MessageBox tone={balanceMessage?.tone}>{balanceMessage?.text}</MessageBox>
+            <button
+              type="button"
+              className="profile-page__cta profile-page__cta--secondary"
+              onClick={async () => {
+                if (!token) return;
+                const amount = parseFloat(balanceInput.replace(",", "."));
+                if (isNaN(amount) || amount <= 0) {
+                  setBalanceMessage({ tone: "error", text: "Bitte einen gültigen Betrag eingeben." });
+                  return;
+                }
+                setUpdatingBalance(true);
+                setBalanceMessage(undefined);
+                try {
+                  const updated = await setBalance(amount, token);
+                  // Profil aktualisieren mit neuem Guthaben
+                  setProfile(updated);
+                  setBalanceInput("");
+                  const balanceText = typeof updated.balance === "number"
+                    ? updated.balance.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    : "0,00";
+                  setBalanceMessage({ tone: "success", text: `Guthaben erfolgreich auf ${balanceText} EUR aufgeladen.` });
+                  // Profil neu laden, um sicherzustellen, dass alle Daten aktuell sind
+                  await loadProfile();
+                } catch (err) {
+                  const message = err instanceof Error ? err.message : "Unbekannter Fehler";
+                  setBalanceMessage({ tone: "error", text: message });
+                } finally {
+                  setUpdatingBalance(false);
+                }
+              }}
+              disabled={updatingBalance || !balanceInput.trim()}
+            >
+              {updatingBalance ? "Lädt..." : "Guthaben aufladen"}
+            </button>
           </div>
 
           <div className="profile-page__vehicles">

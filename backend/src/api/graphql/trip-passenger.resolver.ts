@@ -26,4 +26,47 @@ export class TripPassengerResolver {
     }
     return this.tripPassengerService.findByPassenger(user.id);
   }
+
+  @UseGuards(GqlAuthGuard)
+  @Query(() => [TripPassenger], { name: 'myTripPassengers', nullable: 'itemsAndList' })
+  async myTripPassengers(@CurrentUser() user: any) {
+    if (!user?.id) {
+      return [];
+    }
+    return this.tripPassengerService.findByDriver(user.id);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => TripPassenger)
+  async cancelBooking(
+    @CurrentUser() user: any,
+    @Args('bookingId', { type: () => Int }) bookingId: number,
+  ) {
+    return this.tripPassengerService.cancelBooking(bookingId, user.id);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => TripPassenger)
+  async completeBooking(
+    @CurrentUser() user: any,
+    @Args('bookingId', { type: () => Int }) bookingId: number,
+  ) {
+    return this.tripPassengerService.completeBooking(bookingId, user.id);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => TripPassenger)
+  async updateBookingStatus(
+    @CurrentUser() user: any,
+    @Args('bookingId', { type: () => Int }) bookingId: number,
+    @Args('status') status: string,
+  ) {
+    if (status === 'storniert') {
+      return this.tripPassengerService.cancelBooking(bookingId, user.id);
+    }
+    if (status === 'abgeschlossen') {
+      return this.tripPassengerService.completeBooking(bookingId, user.id);
+    }
+    throw new Error('Ungültiger Status. Erlaubt: storniert, abgeschlossen');
+  }
 }
