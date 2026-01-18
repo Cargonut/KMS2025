@@ -93,6 +93,11 @@ Migration anwenden:
 npx prisma migrate deploy
 ```
 ---
+(Änderungen von Prisma in DB pushen):
+```bash
+npx prisma db push
+```
+---
 🚀 5. Backend starten
 Entwicklung
 ```bash
