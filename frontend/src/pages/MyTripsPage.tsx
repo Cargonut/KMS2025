@@ -22,8 +22,8 @@ const formatPrice = (value: number | null | undefined) => {
 };
 
 const formatSeats = (value: number | null | undefined) => {
-  if (typeof value !== "number" || !Number.isFinite(value)) return "Plaetze: k.A.";
-  return `Plaetze: ${value}`;
+  if (typeof value !== "number" || !Number.isFinite(value)) return "Plätze: k.A.";
+  return `Plätze: ${value}`;
 };
 
 const formatMotorType = (value: string | null | undefined) => {
@@ -42,7 +42,10 @@ export default function MyTripsPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ tone: "error" | "info" | "success"; text: string }>();
   const [deleteTarget, setDeleteTarget] = useState<Trip | null>(null);
-  const [deleteMessage, setDeleteMessage] = useState<{ tone: "error" | "info" | "success"; text: string }>();
+  const [deleteMessage, setDeleteMessage] = useState<{
+    tone: "error" | "info" | "success";
+    text: string;
+  }>();
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
@@ -65,7 +68,7 @@ export default function MyTripsPage() {
       const profile = await fetchProfile(token);
       const userId = Number(profile.id);
       if (!Number.isFinite(userId)) {
-        throw new Error("Ungueltige Nutzer-ID.");
+        throw new Error("Ungültige Nutzer-ID.");
       }
       const data = await fetchTrips();
       const filtered = data.filter((trip) => Number(trip.user_id) === userId);
@@ -95,7 +98,7 @@ export default function MyTripsPage() {
       await deleteTrip(deleteTarget.id, token);
       setTrips((prev) => prev.filter((trip) => trip.id !== deleteTarget.id));
       setDeleteTarget(null);
-      setMessage({ tone: "success", text: "Fahrt geloescht." });
+      setMessage({ tone: "success", text: "Fahrt gelöscht." });
     } catch (err) {
       const text = err instanceof Error ? err.message : "Unbekannter Fehler.";
       setDeleteMessage({ tone: "error", text });
@@ -110,9 +113,9 @@ export default function MyTripsPage() {
         <Logo alt="Esuap" size={180} className="page__logo" />
         <div className="trips-page__card stack stack--lg">
           <header className="trips-page__header">
-            <p className="trips-page__title">MEINE FAHRTEN</p>
+            <p className="trips-page__title">Meine Fahrten</p>
             <span className="trips-page__divider" aria-hidden="true" />
-            <p className="trips-page__subtitle">Uebersicht deiner veroeffentlichten Fahrten</p>
+            <p className="trips-page__subtitle">Übersicht deiner veröffentlichten Fahrten</p>
           </header>
 
           <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
@@ -120,7 +123,7 @@ export default function MyTripsPage() {
           {loading ? (
             <p className="trips-page__empty">Fahrten werden geladen...</p>
           ) : trips.length === 0 ? (
-            <p className="trips-page__empty">Noch keine Fahrten veroeffentlicht.</p>
+            <p className="trips-page__empty">Noch keine Fahrten veröffentlicht.</p>
           ) : (
             <div className="trips-page__list">
               {trips.map((trip) => (
@@ -138,12 +141,13 @@ export default function MyTripsPage() {
                       onClick={() => handleDeleteRequest(trip)}
                       disabled={deleting}
                     >
-                      Loeschen
+                      Löschen
                     </button>
                   </div>
                   <p className="trips-page__vehicle">
                     Fahrzeug:{" "}
-                    {trip.vehicle?.name || (trip.vehicle_id ? `Fahrzeug #${trip.vehicle_id}` : "k.A.")}
+                    {trip.vehicle?.name ||
+                      (trip.vehicle_id ? `Fahrzeug #${trip.vehicle_id}` : "k.A.")}
                   </p>
                   <div className="trips-page__details">
                     <span>{formatPrice(trip.price)}</span>
@@ -159,9 +163,9 @@ export default function MyTripsPage() {
 
         {!token ? (
           <div className="trips-page__notice">
-            <p>Bitte einloggen, um deine Fahrten zu sehen.</p>
+            <p>Bitte anmelden, um deine Fahrten zu sehen.</p>
             <Link to="/login" className="trips-page__cta trips-page__cta--ghost">
-              Zum Login
+              Zum Anmelden
             </Link>
           </div>
         ) : null}
@@ -171,10 +175,10 @@ export default function MyTripsPage() {
         {deleteTarget ? (
           <div className="profile-page__modal-backdrop" role="dialog" aria-modal="true">
             <div className="profile-page__modal">
-              <p className="profile-page__modal-title">Fahrt loeschen?</p>
+              <p className="profile-page__modal-title">Fahrt löschen?</p>
               <p className="profile-page__modal-text">
-                Bist du sicher, dass du die Fahrt von {deleteTarget.from_location} nach {deleteTarget.to_location} loeschen
-                willst?
+                Bist du sicher, dass du die Fahrt von {deleteTarget.from_location} nach{" "}
+                {deleteTarget.to_location} löschen willst?
               </p>
               <MessageBox tone={deleteMessage?.tone}>{deleteMessage?.text}</MessageBox>
               <div className="profile-page__modal-actions">
@@ -192,7 +196,7 @@ export default function MyTripsPage() {
                   onClick={handleConfirmDelete}
                   disabled={deleting}
                 >
-                  {deleting ? "Loeschen..." : "Fahrt loeschen"}
+                  {deleting ? "Löschen..." : "Fahrt löschen"}
                 </button>
               </div>
             </div>

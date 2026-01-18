@@ -5,7 +5,6 @@ import Logo from "../components/Logo";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 import ProfileAvatar from "../components/ProfileAvatar";
 import MessageBox from "../components/ui/MessageBox";
-import VehicleManager from "../features/VehicleManager";
 
 const storageKey = "cargonaut-token";
 
@@ -89,11 +88,19 @@ export default function TripPublicationPage() {
     () =>
       selectedVehicleId === null
         ? null
-        : vehicles.find((vehicle) => Number(vehicle.id) === selectedVehicleId) ?? null,
+        : (vehicles.find((vehicle) => Number(vehicle.id) === selectedVehicleId) ?? null),
     [selectedVehicleId, vehicles],
   );
+  const isVehicleReady =
+    Boolean(selectedVehicle) &&
+    typeof selectedVehicle?.load_area === "number" &&
+    Number.isFinite(selectedVehicle.load_area) &&
+    selectedVehicle.load_area > 0 &&
+    typeof selectedVehicle?.weight === "number" &&
+    Number.isFinite(selectedVehicle.weight) &&
+    selectedVehicle.weight > 0;
 
-  const title = "FAHRT ANBIETEN";
+  const title = "Fahrt anbieten";
 
   const handleChange = (name: keyof CreateTripInput, value: string) => {
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -102,7 +109,7 @@ export default function TripPublicationPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!token) {
-      setMessage({ tone: "error", text: "Bitte zuerst einloggen." });
+      setMessage({ tone: "error", text: "Bitte zuerst anmelden." });
       return;
     }
     setBusy(true);
@@ -111,19 +118,25 @@ export default function TripPublicationPage() {
       if (!form.from_location || !form.to_location) {
         throw new Error("Bitte Start und Ziel angeben.");
       }
+      if (!selectedVehicle) {
+        throw new Error("Bitte zuerst ein Fahrzeug auswählen.");
+      }
+      if (!isVehicleReady) {
+        throw new Error("Bitte ein Fahrzeug mit Ladefläche und Zuladung auswählen.");
+      }
       const startDate = new Date(startDateLocal);
       if (Number.isNaN(startDate.getTime())) {
-        throw new Error("Bitte ein gueltiges Startdatum waehlen.");
+        throw new Error("Bitte ein gültiges Startdatum wählen.");
       }
       const normalizedPrice = priceInput.replace(",", ".").trim();
       const price = normalizedPrice ? Number(normalizedPrice) : undefined;
       if (normalizedPrice && (Number.isNaN(price) || price < 0)) {
-        throw new Error("Bitte einen gueltigen Preis angeben.");
+        throw new Error("Bitte einen gültigen Preis angeben.");
       }
       const normalizedSeats = seatsInput.trim();
       const seats = normalizedSeats ? Number(normalizedSeats) : undefined;
       if (normalizedSeats && (!Number.isFinite(seats) || seats <= 0)) {
-        throw new Error("Bitte gueltige Sitzplaetze angeben.");
+        throw new Error("Bitte gültige Sitzplätze angeben.");
       }
       const payload: CreateTripInput = {
         ...form,
@@ -167,7 +180,7 @@ export default function TripPublicationPage() {
             <span className="trip-publication__divider" aria-hidden="true" />
 
             <label className="field field--tight">
-              <span className="trip-publication__label">VON</span>
+              <span className="trip-publication__label">Von</span>
               <input
                 className="field__control trip-publication__input"
                 name="from_location"
@@ -178,7 +191,7 @@ export default function TripPublicationPage() {
             </label>
 
             <label className="field field--tight">
-              <span className="trip-publication__label">NACH</span>
+              <span className="trip-publication__label">Nach</span>
               <input
                 className="field__control trip-publication__input"
                 name="to_location"
@@ -189,7 +202,7 @@ export default function TripPublicationPage() {
             </label>
 
             <label className="field field--tight">
-              <span className="trip-publication__label">START</span>
+              <span className="trip-publication__label">Start</span>
               <input
                 className="field__control trip-publication__input"
                 type="datetime-local"
@@ -199,7 +212,7 @@ export default function TripPublicationPage() {
             </label>
 
             <label className="field field--tight">
-              <span className="trip-publication__label">PREIS (EUR)</span>
+              <span className="trip-publication__label">Preis (EUR)</span>
               <input
                 className="field__control trip-publication__input"
                 type="number"
@@ -212,7 +225,7 @@ export default function TripPublicationPage() {
             </label>
 
             <label className="field field--tight">
-              <span className="trip-publication__label">SITZPLAETZE</span>
+              <span className="trip-publication__label">Sitzplätze</span>
               <input
                 className="field__control trip-publication__input"
                 type="number"
@@ -226,7 +239,7 @@ export default function TripPublicationPage() {
 
             {vehicles.length > 0 ? (
               <label className="field field--tight">
-                <span className="trip-publication__label">FAHRZEUG</span>
+                <span className="trip-publication__label">Fahrzeug</span>
                 <select
                   className="field__control trip-publication__input"
                   value={selectedVehicleId ?? undefined}
@@ -242,59 +255,65 @@ export default function TripPublicationPage() {
                   ))}
                 </select>
               </label>
-            ) : null}
+            ) : (
+              <div className="trip-publication__notice">
+                <p>Bitte zuerst ein Fahrzeug anlegen, damit du Fahrten anbieten kannst.</p>
+                <Link to="/vehicles" className="trip-publication__cta trip-publication__cta--ghost">
+                  Fahrzeuge verwalten
+                </Link>
+              </div>
+            )}
 
             {selectedVehicle ? (
               <div className="trip-publication__vehicle">
-                <p className="trip-publication__vehicle-title">FAHRZEUG</p>
+                <p className="trip-publication__vehicle-title">Fahrzeug</p>
                 <div className="trip-publication__vehicle-row">
-                  <span className="trip-publication__vehicle-label">TYP</span>
+                  <span className="trip-publication__vehicle-label">Typ</span>
                   <span className="trip-publication__vehicle-value">
                     {selectedVehicle.motor_type || selectedVehicle.name || "k.A."}
                   </span>
                 </div>
                 <div className="trip-publication__vehicle-row">
-                  <span className="trip-publication__vehicle-label">STAURAUM</span>
+                  <span className="trip-publication__vehicle-label">Ladefläche</span>
                   <span className="trip-publication__vehicle-value">
-                    {selectedVehicle.dimensions ||
-                      (selectedVehicle.load_area ? `${selectedVehicle.load_area} m2` : "k.A.")}
+                    {selectedVehicle.load_area ? `${selectedVehicle.load_area} m²` : "k.A."}
                   </span>
                 </div>
                 <div className="trip-publication__vehicle-row">
-                  <span className="trip-publication__vehicle-label">SITZPLAETZE</span>
-                  <span className="trip-publication__vehicle-value">k.A.</span>
+                  <span className="trip-publication__vehicle-label">Zuladung</span>
+                  <span className="trip-publication__vehicle-value">
+                    {selectedVehicle.weight ? `${selectedVehicle.weight} kg` : "k.A."}
+                  </span>
                 </div>
               </div>
             ) : null}
 
             <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
 
-            <button type="submit" className="trip-publication__cta" disabled={busy || !token}>
-              {busy ? "Speichern..." : "Veroeffentlichen"}
+            <button
+              type="submit"
+              className="trip-publication__cta"
+              disabled={busy || !token || !selectedVehicle || !isVehicleReady}
+            >
+              {busy ? "Speichern..." : "Veröffentlichen"}
             </button>
           </form>
 
           <div className="trip-publication__links">
             <Link to="/vehicles" className="trip-publication__link">
-              FAHRZEUGE VERWALTEN
+              Fahrzeuge verwalten
             </Link>
             <Link to="/profile" className="trip-publication__link">
-              PROFIL
+              Profil
             </Link>
           </div>
         </div>
 
-        {token && vehicles.length === 0 ? (
-          <div className="trip-publication__manager">
-            <VehicleManager token={token} vehicles={vehicles} onRefresh={refreshVehicles} />
-          </div>
-        ) : null}
-
         {!token && (
           <div className="trip-publication__notice">
-            <p>Bitte einloggen, um Fahrten anzulegen.</p>
+            <p>Bitte anmelden, um Fahrten anzulegen.</p>
             <Link to="/login" className="trip-publication__cta trip-publication__cta--ghost">
-              Zum Login
+              Zum Anmelden
             </Link>
           </div>
         )}

@@ -1,21 +1,40 @@
-# Dev Documentation (Frontend)
+# Frontend Dev Documentation
 
-Kurz und praktisch: Neue Seiten sollen das gemeinsame Template nutzen, damit Header/Footer/Layout konsistent bleiben.
+Kurz und praktisch: Diese Doku beschreibt ausschließlich das Frontend in `frontend/`.
 
-## Neue Seite anlegen
-1. Datei in `frontend/src/pages/` erstellen, z. B. `frontend/src/pages/NeueSeite.tsx`.
-2. `PageLayout` und optional `PageFooter` verwenden.
-3. Route in `frontend/src/app/routes.tsx` eintragen.
+## Voraussetzungen
+- Node.js >= 20 empfohlen (Vite 7 + React Router 7).  
+- npm 9+.
 
-## Template nutzen (Kurzform)
-- `PageLayout` in `frontend/src/components/PageLayout.tsx`
-  - `variant`: `"default" | "center" | "stack"`
-  - `header`: Titel, Untertitel, Logo und Aktionen (Buttons/Links)
-  - `contentWrap`: legt den Content in `.page__content`
-  - `contentClassName`: zusaetzliche Klassen, z. B. `stack stack--lg`
-- `PageFooter` fuer den Impressum-Link
+## Quick Start
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## Beispiel
+Weitere Befehle:
+- `npm run build` – Production Build
+- `npm run lint` – ESLint
+- `npm run format` – Prettier
+- `npm run format:check` – Prettier (Check)
+- `npm run typecheck` – TypeScript (no emit)
+- `npm run check` – Format-Check + Lint + Typecheck
+
+## Projektstruktur (Frontend)
+- `frontend/src/app/` – Routing und API-Client
+- `frontend/src/pages/` – Seitenkomponenten
+- `frontend/src/components/` – Wiederverwendbare UI-Bausteine
+- `frontend/src/features/` – Größere Feature-Module/Formulare
+- `frontend/src/styles/` – Basisthema + Seitenstyles
+- `frontend/public/` – statische Assets
+
+## Seiten anlegen
+1. Neue Datei in `frontend/src/pages/` erstellen.
+2. `PageLayout` + optional `PageFooter` verwenden.
+3. Route in `frontend/src/app/routes.tsx` hinzufügen.
+
+### Beispiel
 ```tsx
 import { Link } from "react-router-dom";
 import { PageFooter, PageLayout } from "../components/PageLayout";
@@ -44,10 +63,35 @@ export default function NeueSeite() {
 }
 ```
 
-## Wiederverwendbare Bausteine
-- `Logo`, `ProfileAvatar`, `ProfileShortcut`
-- UI-Komponenten: `Card`, `Field`, `MessageBox`
-- Layout-Utilities: `.stack`, `.grid`, `.page__content`
+## Styling-Guide (Simpel-Look)
+- Farb- und Schattenvariablen in `frontend/src/styles/index.css` nutzen.
+  - Zentrale Tokens: `--color-accent`, `--color-surface`, `--color-border`, `--shadow-soft`.
+- Layout-Utilities verwenden: `.stack`, `.grid`, `.page__content`.
+- Für thematische Seiten (Fahrer/Mitfahrer): `PageLayout` mit `page-theme page-theme--driver` oder
+  `page-theme page-theme--passenger` kombinieren.
+- Keine harten Schatten, keine Vollflächen in Primärfarben – alles bewusst reduziert.
+- Überschriften und Buttons in Satzschreibung, keine Forced-Upscale/All-Caps.
 
-## Styling-Hinweis
-Nutze vorhandene Klassen aus `frontend/src/styles/index.css` und `frontend/src/styles/pages.css`, damit Farben und Typo konsistent bleiben. Neue Klassen nur anlegen, wenn es wirklich noetig ist.
+## Copy & Sprache
+- UI-Texte sind Deutsch, konsistent und mit korrekten Umlauten.
+- Einheitliche Begriffe:
+  - Anmelden / Registrieren / Abmelden
+  - Fahrzeuge / Fahrten
+- Fehlende Werte mit `k.A.` kennzeichnen.
+
+## Formatierung
+- Prettier: `frontend/.prettierrc.json`  
+  - `npm run format`
+- ESLint: `frontend/eslint.config.js`  
+  - `npm run lint`
+- Gesamtcheck:  
+  - `npm run check`
+
+## Troubleshooting
+- `Expected Iterable, but did not find one for field "Query.myVehicles/vehicles"`  
+  - Datenbank-Schema ist nicht aktuell. Backend neu starten und Prisma migrieren.
+  - Dev-Fix: `npx prisma db push` (im Backend-Container/Verzeichnis).
+- `column Vehicle.load_area does not exist`  
+  - Migrationen fehlen. Prisma-Migrationen anwenden und Backend neu starten.
+
+

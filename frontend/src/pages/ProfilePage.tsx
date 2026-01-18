@@ -26,7 +26,12 @@ export default function ProfilePage() {
   const [minZoom, setMinZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [dragging, setDragging] = useState(false);
-  const dragStateRef = useRef<{ startX: number; startY: number; originX: number; originY: number } | null>(null);
+  const dragStateRef = useRef<{
+    startX: number;
+    startY: number;
+    originX: number;
+    originY: number;
+  } | null>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -259,7 +264,7 @@ export default function ProfilePage() {
   const birthParts = isBirthDateValid
     ? {
         day: String(birthDate.getDate()).padStart(2, "0"),
-        month: ["JAN", "FEB", "MAER", "APR", "MAI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEZ"][
+        month: ["JAN", "FEB", "MÄR", "APR", "MAI", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEZ"][
           birthDate.getMonth()
         ],
         year: String(birthDate.getFullYear()),
@@ -277,7 +282,7 @@ export default function ProfilePage() {
               type="button"
               className="profile-page__avatar-button"
               onClick={() => fileInputRef.current?.click()}
-              aria-label="Profilbild aendern"
+              aria-label="Profilbild ändern"
               disabled={uploading}
             >
               {profile?.profile_image ? (
@@ -297,7 +302,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="profile-page__header">
-            <p className="profile-page__title">PROFIL</p>
+            <p className="profile-page__title">Profil</p>
             <span className="profile-page__divider" aria-hidden="true" />
           </div>
 
@@ -306,44 +311,50 @@ export default function ProfilePage() {
 
           <div className="profile-page__grid profile-page__grid--two">
             <div className="profile-page__field">
-              <span className="profile-page__label">VORNAME</span>
+              <span className="profile-page__label">Vorname</span>
               <div className="profile-page__value">{profile?.first_name || "-"}</div>
             </div>
             <div className="profile-page__field">
-              <span className="profile-page__label">NAME</span>
+              <span className="profile-page__label">Nachname</span>
               <div className="profile-page__value">{profile?.last_name || "-"}</div>
             </div>
             <div className="profile-page__field profile-page__field--full">
-              <span className="profile-page__label">EMAIL</span>
+              <span className="profile-page__label">E-Mail</span>
               <div className="profile-page__value">{profile?.email || "-"}</div>
             </div>
             <div className="profile-page__field profile-page__field--full">
-              <span className="profile-page__label">GEB. DATUM</span>
+              <span className="profile-page__label">Geburtsdatum</span>
               <div className="profile-page__date">
-                <div className="profile-page__value profile-page__value--tight">{birthParts.day}</div>
-                <div className="profile-page__value profile-page__value--tight">{birthParts.month}</div>
-                <div className="profile-page__value profile-page__value--tight">{birthParts.year}</div>
+                <div className="profile-page__value profile-page__value--tight">
+                  {birthParts.day}
+                </div>
+                <div className="profile-page__value profile-page__value--tight">
+                  {birthParts.month}
+                </div>
+                <div className="profile-page__value profile-page__value--tight">
+                  {birthParts.year}
+                </div>
               </div>
             </div>
             <div className="profile-page__field profile-page__field--full">
-              <span className="profile-page__label">PASSWORT</span>
+              <span className="profile-page__label">Passwort</span>
               <div className="profile-page__value">************</div>
             </div>
             <div className="profile-page__field profile-page__field--full">
-              <span className="profile-page__label">PASSWORT WIEDERHOLEN</span>
+              <span className="profile-page__label">Passwort wiederholen</span>
               <div className="profile-page__value">************</div>
             </div>
           </div>
 
           <div className="profile-page__vehicles">
             <Link to="/vehicles" className="profile-page__section-link">
-              FAHRZEUGE
+              Fahrzeuge
             </Link>
             <div className="profile-page__actions">
               <button
                 type="button"
                 className="profile-page__action"
-                aria-label="Account loeschen"
+                aria-label="Konto löschen"
                 onClick={() => {
                   setDeletePassword("");
                   setDeleteMessage(undefined);
@@ -384,7 +395,7 @@ export default function ProfilePage() {
                   />
                 </div>
                 <label className="profile-page__field">
-                  <span className="profile-page__label">ZOOM</span>
+                  <span className="profile-page__label">Zoom</span>
                   <input
                     className="profile-page__range"
                     type="range"
@@ -404,12 +415,14 @@ export default function ProfilePage() {
                 onClick={handleUpload}
                 disabled={!selectedFile || uploading}
               >
-                {uploading ? "Upload laeuft..." : "Profilbild speichern"}
+                {uploading ? "Upload läuft..." : "Profilbild speichern"}
               </button>
             </div>
           )}
 
-          {!previewUrl && uploadMessage ? <MessageBox tone={uploadMessage.tone}>{uploadMessage.text}</MessageBox> : null}
+          {!previewUrl && uploadMessage ? (
+            <MessageBox tone={uploadMessage.tone}>{uploadMessage.text}</MessageBox>
+          ) : null}
         </div>
 
         <PageFooter className="page__footer--sm page__footer--inverse" />
@@ -417,12 +430,12 @@ export default function ProfilePage() {
         {deleteOpen ? (
           <div className="profile-page__modal-backdrop" role="dialog" aria-modal="true">
             <div className="profile-page__modal">
-              <p className="profile-page__modal-title">Account loeschen?</p>
+              <p className="profile-page__modal-title">Konto löschen?</p>
               <p className="profile-page__modal-text">
-                Bist du sicher, dass du deinen Account unwiderruflich loeschen willst?
+                Bist du sicher, dass du dein Konto unwiderruflich löschen willst?
               </p>
               <label className="profile-page__field">
-                <span className="profile-page__label">PASSWORT</span>
+                <span className="profile-page__label">Passwort</span>
                 <input
                   className="profile-page__input"
                   type="password"
@@ -447,7 +460,7 @@ export default function ProfilePage() {
                   onClick={handleDeleteAccount}
                   disabled={deleting}
                 >
-                  {deleting ? "Loeschen..." : "Account loeschen"}
+                  {deleting ? "Löschen..." : "Konto löschen"}
                 </button>
               </div>
             </div>

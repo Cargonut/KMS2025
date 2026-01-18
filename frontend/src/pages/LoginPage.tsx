@@ -1,12 +1,13 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginUser } from "../app/api";
+import { fetchProfile, loginUser, updateProfile } from "../app/api";
 import Field from "../components/ui/Field";
 import MessageBox, { MessageTone } from "../components/ui/MessageBox";
 import Logo from "../components/Logo";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 
 const storageKey = "cargonaut-token";
+const pendingProfileImageKey = "cargonaut-pending-profile-image";
 
 type Message = { tone: MessageTone; text: string };
 
@@ -25,7 +26,19 @@ export default function LoginPage() {
     try {
       const token = await loginUser(email, password);
       localStorage.setItem(storageKey, token);
-      setMessage({ tone: "success", text: "Login erfolgreich" });
+      const pendingProfileImage = localStorage.getItem(pendingProfileImageKey);
+      if (pendingProfileImage) {
+        try {
+          const profile = await fetchProfile(token);
+          if (!profile.profile_image) {
+            await updateProfile({ profile_image: pendingProfileImage }, token);
+            window.dispatchEvent(new Event("profile-updated"));
+          }
+        } finally {
+          localStorage.removeItem(pendingProfileImageKey);
+        }
+      }
+      setMessage({ tone: "success", text: "Anmeldung erfolgreich." });
       window.dispatchEvent(new Event("auth-changed"));
       navigate("/center");
     } catch (err) {
@@ -41,14 +54,14 @@ export default function LoginPage() {
     <PageLayout variant="center" className="login">
       <Logo alt="Esuap" className="page__logo" />
       <div className="login__card">
-        <h1 className="login__title koho-bold">LOGIN</h1>
+        <h1 className="login__title koho-bold">Anmelden</h1>
         <div className="login__divider" />
 
         <form className="stack stack--lg" onSubmit={submit}>
           <Field
             className="login__field field--tight"
             inputClassName="login__control"
-            label="EMAIL"
+            label="E-Mail"
             name="email"
             type="email"
             required
@@ -60,7 +73,7 @@ export default function LoginPage() {
           <Field
             className="login__field field--tight"
             inputClassName="login__control"
-            label="PASSWORD"
+            label="Passwort"
             name="password"
             type="password"
             required
@@ -72,7 +85,7 @@ export default function LoginPage() {
           <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
 
           <button className="login__button" disabled={busy}>
-            {busy ? "..." : "LOGIN"}
+            {busy ? "..." : "Anmelden"}
           </button>
         </form>
       </div>

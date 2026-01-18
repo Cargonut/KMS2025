@@ -34,7 +34,7 @@ export default function DriverMenuPage() {
           />
 
           <div className="driver-menu__offer stack stack--sm">
-            <p className="driver-menu__offer-title">ANBIETEN</p>
+            <p className="driver-menu__offer-title">Fahrt anbieten</p>
             <span className="driver-menu__offer-divider" aria-hidden="true" />
 
             <div className="stack stack--xs">
@@ -64,21 +64,21 @@ export default function DriverMenuPage() {
             </div>
 
             <Link to={offerHref} className="driver-menu__cta">
-              ANBIETEN
+              Fahrt anbieten
             </Link>
           </div>
 
           <div className="stack stack--sm">
             <Link to="/my-trips" className="driver-menu__link">
-              MEINE FAHRTEN
+              Meine Fahrten
             </Link>
             <Link to="/vehicles" className="driver-menu__link">
-              FAHRZEUGE
+              Fahrzeuge
             </Link>
           </div>
         </div>
 
-        <PageFooter className="page__footer--sm page__footer--inverse" />
+        <PageFooter className="page__footer--sm" />
       </section>
     </PageLayout>
   );

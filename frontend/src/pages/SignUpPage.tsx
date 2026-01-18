@@ -2,13 +2,18 @@
 import { Link, useNavigate } from "react-router-dom";
 import { signupUser } from "../app/api";
 import { PageFooter, PageLayout } from "../components/PageLayout";
-import SignupForm, { SignupFormData, getSignupValidationError, toSignupInput } from "../features/SignupForm";
+import SignupForm, {
+  SignupFormData,
+  getSignupValidationError,
+  toSignupInput,
+} from "../features/SignupForm";
 import type { Message } from "../features/types";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<Message>();
+  const pendingProfileImageKey = "cargonaut-pending-profile-image";
 
   const handleSignup = async (form: SignupFormData, reset: () => void) => {
     setMessage(undefined);
@@ -20,8 +25,13 @@ export default function SignUpPage() {
       }
 
       await signupUser(toSignupInput(form));
+      if (form.profile_image) {
+        localStorage.setItem(pendingProfileImageKey, form.profile_image);
+      } else {
+        localStorage.removeItem(pendingProfileImageKey);
+      }
 
-      setMessage({ tone: "success", text: "Registrierung erfolgreich! Bitte jetzt einloggen." });
+      setMessage({ tone: "success", text: "Registrierung erfolgreich! Bitte jetzt anmelden." });
       reset();
       navigate("/login");
     } catch (err) {
@@ -36,15 +46,15 @@ export default function SignUpPage() {
   return (
     <PageLayout
       variant="default"
-      className="signup"
+      className="signup page--contrast"
       header={{
         align: "center",
         logo: { alt: "Esuap", size: 180 },
         title: "Registrierung",
-        subtitle: "Account anlegen, um Angebote zu erstellen.",
+        subtitle: "Konto anlegen, um Angebote zu erstellen.",
         actions: (
           <Link to="/login" className="btn btn--ghost">
-            Login
+            Anmelden
           </Link>
         ),
       }}

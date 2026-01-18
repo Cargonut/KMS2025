@@ -73,7 +73,11 @@ export function PageLayout({
             {header?.subtitle ? <p className="muted">{header.subtitle}</p> : null}
           </div>
           {header?.actions ? (
-            <div className={["session", alignCenter ? "session--center" : ""].filter(Boolean).join(" ")}>
+            <div
+              className={["session", alignCenter ? "session--center" : ""]
+                .filter(Boolean)
+                .join(" ")}
+            >
               {header.actions}
             </div>
           ) : null}

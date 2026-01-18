@@ -7,6 +7,7 @@ export default function ImpressumPage() {
   return (
     <PageLayout
       variant="stack"
+      className="page--contrast"
       header={{
         align: "center",
         logo: { alt: "Esuap", size: 180 },

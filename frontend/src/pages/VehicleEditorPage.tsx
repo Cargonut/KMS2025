@@ -45,7 +45,10 @@ export default function VehicleEditorPage() {
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteMessage, setDeleteMessage] = useState<{ tone: "success" | "error" | "info"; text: string }>();
+  const [deleteMessage, setDeleteMessage] = useState<{
+    tone: "success" | "error" | "info";
+    text: string;
+  }>();
   const [deleting, setDeleting] = useState(false);
   const requestedVehicleId = useMemo(() => {
     const raw = searchParams.get("vehicle");
@@ -84,7 +87,10 @@ export default function VehicleEditorPage() {
           setSelectedVehicleId(null);
           return;
         }
-        if (requestedVehicleId && data.some((vehicle) => Number(vehicle.id) === requestedVehicleId)) {
+        if (
+          requestedVehicleId &&
+          data.some((vehicle) => Number(vehicle.id) === requestedVehicleId)
+        ) {
           setSelectedVehicleId(requestedVehicleId);
           return;
         }
@@ -114,7 +120,7 @@ export default function VehicleEditorPage() {
     () =>
       selectedVehicleId === null
         ? null
-        : vehicles.find((vehicle) => Number(vehicle.id) === selectedVehicleId) ?? null,
+        : (vehicles.find((vehicle) => Number(vehicle.id) === selectedVehicleId) ?? null),
     [selectedVehicleId, vehicles],
   );
 
@@ -159,7 +165,7 @@ export default function VehicleEditorPage() {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!token) {
-      setMessage({ tone: "error", text: "Bitte zuerst einloggen." });
+      setMessage({ tone: "error", text: "Bitte zuerst anmelden." });
       return;
     }
     if (isEditMode && !selectedVehicleId) {
@@ -175,10 +181,10 @@ export default function VehicleEditorPage() {
       const loadArea = Number(normalizedLoadArea);
       const weight = form.weight ? Number(form.weight) : undefined;
       if (!name) {
-        throw new Error("Bitte einen Namen fuer das Fahrzeug angeben.");
+        throw new Error("Bitte einen Namen für das Fahrzeug angeben.");
       }
       if (!normalizedLoadArea || Number.isNaN(loadArea) || loadArea <= 0) {
-        throw new Error("Bitte eine gueltige Ladeflaeche angeben.");
+        throw new Error("Bitte eine gültige Ladefläche angeben.");
       }
 
       const payload: UpdateVehicleInput = {
@@ -258,14 +264,21 @@ export default function VehicleEditorPage() {
       <section className="vehicle-editor__panel stack stack--lg">
         <Logo alt="Esuap" size={180} className="page__logo" />
         <div className="vehicle-editor__card stack stack--lg">
-          <div className={`vehicle-editor__toolbar${isEditMode ? " vehicle-editor__toolbar--single" : ""}`}>
+          <div
+            className={`vehicle-editor__toolbar${isEditMode ? " vehicle-editor__toolbar--single" : ""}`}
+          >
             {!isEditMode ? (
-              <button type="button" className="vehicle-editor__new" onClick={handleNew} aria-label="Neues Fahrzeug">
+              <button
+                type="button"
+                className="vehicle-editor__new"
+                onClick={handleNew}
+                aria-label="Neues Fahrzeug"
+              >
                 +
               </button>
             ) : null}
             <div>
-              <p className="vehicle-editor__title">FAHRZEUGE</p>
+              <p className="vehicle-editor__title">Fahrzeuge</p>
               <span className="vehicle-editor__divider" aria-hidden="true" />
               <p className="vehicle-editor__subtitle">Erstelle oder bearbeite dein Fahrzeug</p>
             </div>
@@ -318,7 +331,7 @@ export default function VehicleEditorPage() {
             ) : null}
 
             <label className="vehicle-editor__field">
-              <span>Ladeflaeche (m2)</span>
+              <span>Ladefläche (m²)</span>
               <input
                 className="vehicle-editor__input"
                 type="number"
@@ -366,14 +379,18 @@ export default function VehicleEditorPage() {
                 rows={4}
                 value={form.special_features}
                 onChange={(event) => handleChange("special_features", event.target.value)}
-                placeholder="z. B. Kuehlbox, Rampe, Gurte"
+                placeholder="z. B. Kühlbox, Rampe, Gurte"
               />
             </label>
 
             <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
 
             <div className="vehicle-editor__actions">
-              <button type="submit" className="vehicle-editor__cta" disabled={busy || uploading || !token}>
+              <button
+                type="submit"
+                className="vehicle-editor__cta"
+                disabled={busy || uploading || !token}
+              >
                 {busy ? "Speichern..." : "Fahrzeug speichern"}
               </button>
               {selectedVehicleId ? (
@@ -383,7 +400,7 @@ export default function VehicleEditorPage() {
                   onClick={handleDeleteRequest}
                   disabled={busy || deleting}
                 >
-                  Fahrzeug loeschen
+                  Fahrzeug löschen
                 </button>
               ) : null}
             </div>
@@ -392,9 +409,9 @@ export default function VehicleEditorPage() {
 
         {!token ? (
           <div className="vehicle-editor__notice">
-            <p>Bitte einloggen, um Fahrzeuge zu verwalten.</p>
+            <p>Bitte anmelden, um Fahrzeuge zu verwalten.</p>
             <Link to="/login" className="vehicle-editor__cta vehicle-editor__cta--ghost">
-              Zum Login
+              Zum Anmelden
             </Link>
           </div>
         ) : null}
@@ -404,9 +421,9 @@ export default function VehicleEditorPage() {
         {deleteOpen ? (
           <div className="profile-page__modal-backdrop" role="dialog" aria-modal="true">
             <div className="profile-page__modal">
-              <p className="profile-page__modal-title">Fahrzeug loeschen?</p>
+              <p className="profile-page__modal-title">Fahrzeug löschen?</p>
               <p className="profile-page__modal-text">
-                Bist du sicher, dass du dieses Fahrzeug unwiderruflich loeschen willst?
+                Bist du sicher, dass du dieses Fahrzeug unwiderruflich löschen willst?
               </p>
               <MessageBox tone={deleteMessage?.tone}>{deleteMessage?.text}</MessageBox>
               <div className="profile-page__modal-actions">
@@ -424,7 +441,7 @@ export default function VehicleEditorPage() {
                   onClick={handleConfirmDelete}
                   disabled={deleting}
                 >
-                  {deleting ? "Loeschen..." : "Fahrzeug loeschen"}
+                  {deleting ? "Löschen..." : "Fahrzeug löschen"}
                 </button>
               </div>
             </div>

@@ -22,8 +22,8 @@ const formatPrice = (value: number | null | undefined) => {
 };
 
 const formatSeats = (value: number | null | undefined) => {
-  if (typeof value !== "number" || !Number.isFinite(value)) return "Plaetze: k.A.";
-  return `Plaetze: ${value}`;
+  if (typeof value !== "number" || !Number.isFinite(value)) return "Plätze: k.A.";
+  return `Plätze: ${value}`;
 };
 
 const formatMotorType = (value: string | null | undefined) => {
@@ -84,7 +84,7 @@ export default function PassengerOverviewPage() {
         <Logo alt="Esuap" size={180} className="page__logo" />
         <div className="trips-page__card stack stack--lg">
           <header className="trips-page__header">
-            <p className="trips-page__title">UEBERSICHT</p>
+            <p className="trips-page__title">Übersicht</p>
             <span className="trips-page__divider" aria-hidden="true" />
             <p className="trips-page__subtitle">Deine gebuchten Fahrten</p>
           </header>
@@ -104,7 +104,9 @@ export default function PassengerOverviewPage() {
                     <div className="trips-page__row">
                       <div>
                         <p className="trips-page__route">
-                          {trip ? `${trip.from_location} - ${trip.to_location}` : "Fahrt nicht verfuegbar"}
+                          {trip
+                            ? `${trip.from_location} - ${trip.to_location}`
+                            : "Fahrt nicht verfügbar"}
                         </p>
                         <p className="trips-page__meta">
                           {trip ? formatTripDateTime(trip.start_date) : "--"}
@@ -115,7 +117,9 @@ export default function PassengerOverviewPage() {
                     {trip ? (
                       <>
                         <p className="trips-page__vehicle">
-                          Fahrzeug: {trip.vehicle?.name || (trip.vehicle_id ? `Fahrzeug #${trip.vehicle_id}` : "k.A.")}
+                          Fahrzeug:{" "}
+                          {trip.vehicle?.name ||
+                            (trip.vehicle_id ? `Fahrzeug #${trip.vehicle_id}` : "k.A.")}
                         </p>
                         <div className="trips-page__details">
                           <span>{formatPrice(trip.price)}</span>
@@ -134,9 +138,9 @@ export default function PassengerOverviewPage() {
 
         {!token ? (
           <div className="trips-page__notice">
-            <p>Bitte einloggen, um deine Buchungen zu sehen.</p>
+            <p>Bitte anmelden, um deine Buchungen zu sehen.</p>
             <Link to="/login" className="trips-page__cta trips-page__cta--ghost">
-              Zum Login
+              Zum Anmelden
             </Link>
           </div>
         ) : null}

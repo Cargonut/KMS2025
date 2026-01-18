@@ -90,7 +90,7 @@ export default function ProfileShortcut() {
       <button
         type="button"
         className="profile-shortcut__button"
-        aria-label="Profilmenue oeffnen"
+        aria-label="Profilmenü öffnen"
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
@@ -104,11 +104,21 @@ export default function ProfileShortcut() {
 
       {open ? (
         <div className="profile-menu" role="menu">
-          <Link to="/profile" className="profile-menu__item" role="menuitem" onClick={() => setOpen(false)}>
+          <Link
+            to="/profile"
+            className="profile-menu__item"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+          >
             Profil
           </Link>
-          <button type="button" className="profile-menu__item" role="menuitem" onClick={handleLogout}>
-            Logout
+          <button
+            type="button"
+            className="profile-menu__item"
+            role="menuitem"
+            onClick={handleLogout}
+          >
+            Abmelden
           </button>
         </div>
       ) : null}

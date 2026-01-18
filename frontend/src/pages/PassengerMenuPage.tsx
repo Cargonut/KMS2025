@@ -27,8 +27,8 @@ const formatPrice = (value: number | null | undefined) => {
 };
 
 const formatSeats = (value: number | null | undefined) => {
-  if (typeof value !== "number" || !Number.isFinite(value)) return "Plaetze k.A.";
-  return `${value} Plaetze`;
+  if (typeof value !== "number" || !Number.isFinite(value)) return "Plätze k.A.";
+  return `${value} Plätze`;
 };
 
 const formatMotorType = (value: string | null | undefined) => {
@@ -125,7 +125,7 @@ export default function PassengerMenuPage() {
 
   const handleBook = async (tripId: number) => {
     if (!token) {
-      setMessage({ tone: "error", text: "Bitte zuerst einloggen." });
+      setMessage({ tone: "error", text: "Bitte zuerst anmelden." });
       return;
     }
     setBookingTripId(tripId);
@@ -146,7 +146,7 @@ export default function PassengerMenuPage() {
     <PageLayout variant="center" className="page-theme page-theme--passenger">
       <section className="passenger-menu__panel stack stack--lg">
         <Logo alt="Esuap" size={180} className="page__logo" />
-        <p className="passenger-menu__title">MITFAHRER MENU</p>
+        <p className="passenger-menu__title">Mitfahrer-Menü</p>
 
         <div className="passenger-menu__card stack stack--xl">
           <ProfileAvatar
@@ -157,11 +157,11 @@ export default function PassengerMenuPage() {
           />
 
           <div className="passenger-menu__offer stack stack--sm">
-            <p className="passenger-menu__offer-title">SUCHEN</p>
+            <p className="passenger-menu__offer-title">Suchen</p>
             <span className="passenger-menu__offer-divider" aria-hidden="true" />
 
             <div className="stack stack--xs passenger-menu__field">
-              <p className="passenger-menu__field-label">VON</p>
+              <p className="passenger-menu__field-label">Von</p>
               <div className="passenger-menu__field-box">
                 <input
                   className="passenger-menu__input"
@@ -174,7 +174,7 @@ export default function PassengerMenuPage() {
             </div>
 
             <div className="stack stack--xs passenger-menu__field">
-              <p className="passenger-menu__field-label">NACH</p>
+              <p className="passenger-menu__field-label">Nach</p>
               <div className="passenger-menu__field-box">
                 <input
                   className="passenger-menu__input"
@@ -187,7 +187,7 @@ export default function PassengerMenuPage() {
             </div>
 
             <div className="stack stack--xs">
-              <p className="passenger-menu__field-label">DATUM</p>
+              <p className="passenger-menu__field-label">Datum</p>
               <div className="passenger-menu__field-box">
                 <input
                   className="passenger-menu__input"
@@ -199,14 +199,14 @@ export default function PassengerMenuPage() {
             </div>
 
             <button type="button" className="passenger-menu__cta" onClick={handleSearch}>
-              SUCHEN
+              Suchen
             </button>
           </div>
 
           <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
 
           <div className="passenger-menu__results stack stack--xs">
-            <p className="passenger-menu__results-title">ANGEBOTE</p>
+            <p className="passenger-menu__results-title">Angebote</p>
             {loading ? (
               <p className="passenger-menu__result-empty">Angebote werden geladen...</p>
             ) : hasSearched ? (
@@ -226,10 +226,12 @@ export default function PassengerMenuPage() {
                           {trip.from_location} - {trip.to_location}
                         </p>
                         <p className="passenger-menu__result-meta">
-                          {formatTripDate(trip.start_date) || "--"} {formatTripTime(trip.start_date)}
+                          {formatTripDate(trip.start_date) || "--"}{" "}
+                          {formatTripTime(trip.start_date)}
                         </p>
                         <p className="passenger-menu__result-vehicle">
-                          {formatMotorType(trip.vehicle?.motor_type)} - {formatLoad(trip.vehicle?.weight)}
+                          {formatMotorType(trip.vehicle?.motor_type)} -{" "}
+                          {formatLoad(trip.vehicle?.weight)}
                         </p>
                       </div>
                     </div>
@@ -244,7 +246,11 @@ export default function PassengerMenuPage() {
                         onClick={() => handleBook(trip.id)}
                         disabled={bookingTripId === trip.id || bookedTripIds.includes(trip.id)}
                       >
-                        {bookedTripIds.includes(trip.id) ? "GEBUCHT" : bookingTripId === trip.id ? "BUCHEN..." : "BUCHEN"}
+                        {bookedTripIds.includes(trip.id)
+                          ? "Gebucht"
+                          : bookingTripId === trip.id
+                            ? "Buchen..."
+                            : "Buchen"}
                       </button>
                     </div>
                   </article>
@@ -255,7 +261,9 @@ export default function PassengerMenuPage() {
                 </p>
               )
             ) : (
-              <p className="passenger-menu__result-empty">Suche starten, um verfuegbare Fahrten anzuzeigen.</p>
+              <p className="passenger-menu__result-empty">
+                Suche starten, um verfügbare Fahrten anzuzeigen.
+              </p>
             )}
           </div>
 
@@ -266,10 +274,8 @@ export default function PassengerMenuPage() {
           </div>
         </div>
 
-        <PageFooter className="page__footer--sm page__footer--inverse" />
+        <PageFooter className="page__footer--sm" />
       </section>
     </PageLayout>
   );
 }
-
-

@@ -10,20 +10,29 @@ const storageKey = "cargonaut-token";
 export default function VehiclesPage() {
   const [token, setToken] = useState(() => localStorage.getItem(storageKey) || "");
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ tone: "error" | "info" | "success"; text: string }>();
+  const hasError = message?.tone === "error";
 
   const refreshVehicles = useCallback(() => {
     if (!token) {
       setVehicles([]);
       setMessage(undefined);
+      setLoading(false);
       return;
     }
+    setLoading(true);
     setMessage(undefined);
     fetchMyVehicles(token)
-      .then(setVehicles)
+      .then((data) => {
+        setVehicles(data);
+      })
       .catch((err: Error) => {
         setVehicles([]);
         setMessage({ tone: "error", text: err.message });
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }, [token]);
 
@@ -54,16 +63,22 @@ export default function VehiclesPage() {
         <div className="vehicles-page__card stack stack--lg">
           <header className="vehicles-page__header">
             <div>
-              <p className="vehicles-page__title">FAHRZEUGE</p>
+              <p className="vehicles-page__title">Fahrzeuge</p>
               <span className="vehicles-page__divider" aria-hidden="true" />
-              <p className="vehicles-page__subtitle">Uebersicht deiner Fahrzeuge</p>
+              <p className="vehicles-page__subtitle">Übersicht deiner Fahrzeuge</p>
             </div>
           </header>
 
           <MessageBox tone={message?.tone}>{message?.text}</MessageBox>
 
-          {vehicles.length === 0 ? (
-            <p className="vehicles-page__hint">Noch kein Fahrzeug hinterlegt.</p>
+          {loading ? (
+            <p className="vehicles-page__hint">Fahrzeuge werden geladen...</p>
+          ) : vehicles.length === 0 ? (
+            <p className="vehicles-page__hint">
+              {hasError
+                ? "Fahrzeuge konnten nicht geladen werden."
+                : "Noch kein Fahrzeug hinterlegt."}
+            </p>
           ) : (
             <div className="vehicles-page__list">
               {vehicles.map((vehicle) => (
@@ -77,13 +92,18 @@ export default function VehiclesPage() {
                   </div>
                   <div className="vehicles-page__details">
                     <div className="vehicles-page__row">
-                      <p className="vehicles-page__name">{vehicle.name || `Fahrzeug #${vehicle.id}`}</p>
-                      <Link to={`/vehicle-editor?vehicle=${vehicle.id}`} className="vehicles-page__edit">
+                      <p className="vehicles-page__name">
+                        {vehicle.name || `Fahrzeug #${vehicle.id}`}
+                      </p>
+                      <Link
+                        to={`/vehicle-editor?vehicle=${vehicle.id}`}
+                        className="vehicles-page__edit"
+                      >
                         Bearbeiten
                       </Link>
                     </div>
                     <div className="vehicles-page__meta">
-                      <span>Ladeflaeche: {vehicle.load_area ?? "k.A."} m2</span>
+                      <span>Ladefläche: {vehicle.load_area ?? "k.A."} m²</span>
                       <span>Motor: {vehicle.motor_type ?? "k.A."}</span>
                     </div>
                     {vehicle.special_features ? (
@@ -99,14 +119,22 @@ export default function VehiclesPage() {
             <Link to="/vehicle-editor?new=1" className="vehicles-page__cta">
               Fahrzeug erstellen
             </Link>
+            <button
+              type="button"
+              className="vehicles-page__cta vehicles-page__cta--ghost"
+              onClick={refreshVehicles}
+              disabled={loading}
+            >
+              {loading ? "Aktualisieren..." : "Liste aktualisieren"}
+            </button>
           </div>
         </div>
 
         {!token ? (
           <div className="vehicles-page__notice">
-            <p>Bitte einloggen, um Fahrzeuge zu sehen.</p>
+            <p>Bitte anmelden, um Fahrzeuge zu sehen.</p>
             <Link to="/login" className="vehicles-page__cta vehicles-page__cta--ghost">
-              Zum Login
+              Zum Anmelden
             </Link>
           </div>
         ) : null}
