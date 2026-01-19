@@ -1,7 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChangeEvent, PointerEvent } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { deleteMe, fetchProfile, Profile, setBalance, updateProfile, uploadProfileImage } from "../app/api";
+import {
+  deleteMe,
+  fetchMyRatings,
+  fetchProfile,
+  Profile,
+  setBalance,
+  TripRatingDriver,
+  TripRatingOverview,
+  TripRatingPassenger,
+  updateProfile,
+  uploadProfileImage,
+} from "../app/api";
 import { PageFooter, PageLayout } from "../components/PageLayout";
 import MessageBox from "../components/ui/MessageBox";
 import type { Message } from "../features/types";
@@ -41,6 +52,9 @@ export default function ProfilePage() {
   const [balanceInput, setBalanceInput] = useState("");
   const [balanceMessage, setBalanceMessage] = useState<Message>();
   const [updatingBalance, setUpdatingBalance] = useState(false);
+  const [ratings, setRatings] = useState<TripRatingOverview>({ as_driver: [], as_passenger: [] });
+  const [ratingsError, setRatingsError] = useState<string | null>(null);
+  const [ratingsLoading, setRatingsLoading] = useState(false);
 
   const loadProfile = useCallback(async () => {
     if (!token) return;
@@ -57,10 +71,30 @@ export default function ProfilePage() {
     }
   }, [token]);
 
+  const loadRatings = useCallback(async () => {
+    if (!token) return;
+    setRatingsLoading(true);
+    setRatingsError(null);
+    try {
+      const result = await fetchMyRatings(token);
+      setRatings(result);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Unbekannter Fehler";
+      setRatingsError(message);
+    } finally {
+      setRatingsLoading(false);
+    }
+  }, [token]);
+
   useEffect(() => {
     if (!token) return;
     loadProfile();
   }, [loadProfile, token]);
+
+  useEffect(() => {
+    if (!token) return;
+    loadRatings();
+  }, [loadRatings, token]);
 
   useEffect(() => {
     if (!selectedFile) {
@@ -274,6 +308,36 @@ export default function ProfilePage() {
       }
     : { day: "--", month: "---", year: "----" };
 
+  const formatRatingDate = (value: string) => {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Unbekannt";
+    return date.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+  };
+
+  const renderRatingCard = (
+    entry: TripRatingDriver | TripRatingPassenger,
+    label: string,
+    counterpart?: { first_name: string; last_name: string } | null,
+  ) => (
+    <article key={entry.id} className="profile-page__rating-card">
+      <div className="profile-page__rating-header">
+        <span className="profile-page__rating-role">{label}</span>
+        <span className="profile-page__rating-stars">{entry.stars}/5</span>
+      </div>
+      <p className="profile-page__rating-meta">
+        {counterpart ? `${counterpart.first_name} ${counterpart.last_name}` : "Unbekannter Nutzer"}
+        {" · "}
+        {formatRatingDate(entry.created_at)}
+      </p>
+      {entry.trip ? (
+        <p className="profile-page__rating-trip">
+          {entry.trip.from_location} → {entry.trip.to_location}
+        </p>
+      ) : null}
+      {entry.comment ? <p className="profile-page__rating-comment">"{entry.comment}"</p> : null}
+    </article>
+  );
+
   return (
     <PageLayout variant="center">
       <section className="profile-page__panel stack stack--lg">
@@ -410,6 +474,45 @@ export default function ProfilePage() {
             >
               {updatingBalance ? "Lädt..." : "Guthaben aufladen"}
             </button>
+          </div>
+
+          <div className="profile-page__ratings stack stack--sm">
+            <div className="profile-page__ratings-header">
+              <p className="profile-page__section-title">Bewertungen</p>
+              <button
+                type="button"
+                className="profile-page__cta profile-page__cta--ghost"
+                onClick={loadRatings}
+                disabled={ratingsLoading}
+              >
+                {ratingsLoading ? "Lädt..." : "Aktualisieren"}
+              </button>
+            </div>
+            {ratingsError ? <MessageBox tone="error">{ratingsError}</MessageBox> : null}
+            <div className="profile-page__ratings-group">
+              <p className="profile-page__ratings-label">Als Fahrer</p>
+              {ratingsLoading && (!ratings.as_driver || ratings.as_driver.length === 0) ? (
+                <p className="profile-page__hint">Lade Bewertungen...</p>
+              ) : null}
+              {!ratingsLoading && (!ratings.as_driver || ratings.as_driver.length === 0) ? (
+                <p className="profile-page__hint">Noch keine Bewertungen als Fahrer.</p>
+              ) : null}
+              {ratings.as_driver?.map((entry) =>
+                renderRatingCard(entry, "Fahrer", entry.passenger ?? null),
+              )}
+            </div>
+            <div className="profile-page__ratings-group">
+              <p className="profile-page__ratings-label">Als Mitfahrer</p>
+              {ratingsLoading && (!ratings.as_passenger || ratings.as_passenger.length === 0) ? (
+                <p className="profile-page__hint">Lade Bewertungen...</p>
+              ) : null}
+              {!ratingsLoading && (!ratings.as_passenger || ratings.as_passenger.length === 0) ? (
+                <p className="profile-page__hint">Noch keine Bewertungen als Mitfahrer.</p>
+              ) : null}
+              {ratings.as_passenger?.map((entry) =>
+                renderRatingCard(entry, "Mitfahrer", entry.driver ?? null),
+              )}
+            </div>
           </div>
 
           <div className="profile-page__vehicles">

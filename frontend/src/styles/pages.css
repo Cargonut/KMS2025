@@ -1702,6 +1702,82 @@
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.profile-page__ratings {
+  display: grid;
+  gap: 0.85rem;
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-alt);
+}
+
+.profile-page__ratings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.profile-page__ratings-group {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.profile-page__ratings-label {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.profile-page__rating-card {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.7rem 0.75rem;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-soft);
+}
+
+.profile-page__rating-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.profile-page__rating-role {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-ink);
+}
+
+.profile-page__rating-stars {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--color-accent);
+}
+
+.profile-page__rating-meta {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.profile-page__rating-trip {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-ink);
+}
+
+.profile-page__rating-comment {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-ink);
+  font-style: italic;
+}
+
 /* 13. Signup page */
 .signup {
   display: grid;

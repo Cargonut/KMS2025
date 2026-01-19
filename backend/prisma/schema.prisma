@@ -71,6 +71,8 @@ model TripRatingDriver {
   trip_id         Int
   driver_id       Int
   passenger_id    Int
+  stars           Int      @default(0)
+  comment         String?
   punctuality     Int?
   adherence       Int?
   comfort         Int?
@@ -86,6 +88,8 @@ model TripRatingPassenger {
   trip_id      Int
   passenger_id Int
   driver_id    Int
+  stars        Int      @default(0)
+  comment      String?
   punctuality  Int?
   adherence    Int?
   friendliness Int?

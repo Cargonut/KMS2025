@@ -10,6 +10,7 @@ import { TripModule } from './core/trip/trip.module';
 import { VehicleModule } from './core/vehicle/vehicle.module';
 import { TripPassengerModule } from './core/trip-passenger/trip-passenger.module';
 import { PaymentModule } from './core/payment/payment.module';
+import { TripRatingModule } from './core/trip-rating/trip-rating.module';
 import { UploadModule } from './api/rest/upload.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { UploadModule } from './api/rest/upload.module';
     TripPassengerModule,
     VehicleModule,
     PaymentModule,
+    TripRatingModule,
     UploadModule,
 
     GraphQLModule.forRoot<MercuriusDriverConfig>({

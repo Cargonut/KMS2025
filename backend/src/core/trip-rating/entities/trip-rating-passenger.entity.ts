@@ -16,6 +16,12 @@ export class TripRatingPassenger {
   @Field(() => Int)
   driver_id: number;
 
+  @Field(() => Int)
+  stars: number;
+
+  @Field({ nullable: true })
+  comment?: string;
+
   @Field(() => Int, { nullable: true })
   punctuality?: number;
 

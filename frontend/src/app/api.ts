@@ -69,6 +69,51 @@ export type Payment = {
   trip_passenger?: TripPassenger | null;
 };
 
+export type RatingUser = {
+  id: number;
+  first_name: string;
+  last_name: string;
+  profile_image?: string | null;
+};
+
+export type TripRatingDriver = {
+  id: number;
+  trip_id: number;
+  driver_id: number;
+  passenger_id: number;
+  stars: number;
+  comment?: string | null;
+  punctuality?: number | null;
+  adherence?: number | null;
+  comfort?: number | null;
+  cargo_condition?: number | null;
+  created_at: string;
+  trip?: Trip | null;
+  driver?: RatingUser | null;
+  passenger?: RatingUser | null;
+};
+
+export type TripRatingPassenger = {
+  id: number;
+  trip_id: number;
+  passenger_id: number;
+  driver_id: number;
+  stars: number;
+  comment?: string | null;
+  punctuality?: number | null;
+  adherence?: number | null;
+  friendliness?: number | null;
+  created_at: string;
+  trip?: Trip | null;
+  driver?: RatingUser | null;
+  passenger?: RatingUser | null;
+};
+
+export type TripRatingOverview = {
+  as_driver?: TripRatingDriver[] | null;
+  as_passenger?: TripRatingPassenger[] | null;
+};
+
 export function calculateAge(dateString: string | null | undefined): number | null {
   if (!dateString) return null;
   const today = new Date();
@@ -662,6 +707,67 @@ export async function fetchMyPayments(token: string): Promise<Payment[]> {
     token,
   );
   return result.myPayments ?? [];
+}
+
+export async function fetchMyRatings(token: string): Promise<TripRatingOverview> {
+  const result = await graphqlRequest<{ myRatings: TripRatingOverview }>(
+    `query MyRatings {
+      myRatings {
+        as_driver {
+          id
+          trip_id
+          driver_id
+          passenger_id
+          stars
+          comment
+          punctuality
+          adherence
+          comfort
+          cargo_condition
+          created_at
+          passenger {
+            id
+            first_name
+            last_name
+            profile_image
+          }
+          trip {
+            id
+            from_location
+            to_location
+            start_date
+          }
+        }
+        as_passenger {
+          id
+          trip_id
+          passenger_id
+          driver_id
+          stars
+          comment
+          punctuality
+          adherence
+          friendliness
+          created_at
+          driver {
+            id
+            first_name
+            last_name
+            profile_image
+          }
+          trip {
+            id
+            from_location
+            to_location
+            start_date
+          }
+        }
+      }
+    }`,
+    {},
+    token,
+  );
+  return result.myRatings ?? { as_driver: [], as_passenger: [] };
 }
 
 export async function cancelBooking(bookingId: number | string, token: string): Promise<TripPassenger> {
