@@ -13,6 +13,7 @@ import TripPublicationPage from "../pages/TripPublicationPage";
 import VehicleEditorPage from "../pages/VehicleEditorPage";
 import VehiclesPage from "../pages/VehiclesPage";
 import MyTripsPage from "../pages/MyTripsPage";
+import NearbyDriversPage from "../pages/NearbyDriversPage";
 
 export const routes: RouteObject[] = [
   { path: "*", element: <LandingPage /> },
@@ -23,6 +24,7 @@ export const routes: RouteObject[] = [
   { path: "/center", element: <CenterPage /> },
   { path: "/driver-menu", element: <DriverMenuPage /> },
   { path: "/my-trips", element: <MyTripsPage /> },
+  { path: "/nearby-drivers", element: <NearbyDriversPage /> },
   { path: "/trip-publication", element: <TripPublicationPage /> },
   { path: "/vehicle-editor", element: <VehicleEditorPage /> },
   { path: "/vehicles", element: <VehiclesPage /> },

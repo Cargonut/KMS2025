@@ -49,6 +49,10 @@ model Trip {
   type              TripType
   from_location     String
   to_location       String
+  from_lat          Float?
+  from_lng          Float?
+  to_lat            Float?
+  to_lng            Float?
   via               String?
   start_date        DateTime
   end_date          DateTime?
@@ -130,9 +134,16 @@ model TripTracking {
   trip_id    Int
   latitude   Float?
   longitude  Float?
+  h3_index   String?
+  speed      Float?
+  heading    Float?
+  accuracy   Float?
   status     String?
   updated_at DateTime @default(now())
   trip       Trip     @relation(fields: [trip_id], references: [id], onDelete: Cascade)
+
+  @@index([h3_index])
+  @@index([trip_id, updated_at])
 }
 
 enum TripType {

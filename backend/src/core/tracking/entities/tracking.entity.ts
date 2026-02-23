@@ -16,6 +16,18 @@ export class TripTracking {
   longitude?: number;
 
   @Field({ nullable: true })
+  h3_index?: string;
+
+  @Field(() => Float, { nullable: true })
+  speed?: number;
+
+  @Field(() => Float, { nullable: true })
+  heading?: number;
+
+  @Field(() => Float, { nullable: true })
+  accuracy?: number;
+
+  @Field({ nullable: true })
   status?: string;
 
   @Field()
