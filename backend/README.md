@@ -83,6 +83,8 @@ openssl rand -hex 32
 docker compose up -d
 ```
 ---
+(! MACHT BITTE NPM INSTALL !)
+---
 🗄 4. Prisma Setup
 Client generieren:
 ```bash
