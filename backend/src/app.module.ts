@@ -12,6 +12,7 @@ import { TripPassengerModule } from './core/trip-passenger/trip-passenger.module
 import { PaymentModule } from './core/payment/payment.module';
 import { TripRatingModule } from './core/trip-rating/trip-rating.module';
 import { UploadModule } from './api/rest/upload.module';
+import { TrackingModule } from './core/tracking/tracking.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { UploadModule } from './api/rest/upload.module';
     PaymentModule,
     TripRatingModule,
     UploadModule,
+    TrackingModule,
 
     GraphQLModule.forRoot<MercuriusDriverConfig>({
       driver: MercuriusDriver,

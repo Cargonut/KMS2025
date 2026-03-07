@@ -19,6 +19,9 @@ export default function CenterPage() {
           <ProfileAvatar className="center__avatar" fallbackText="Profilbild" label="Profilbild" />
 
           <div className="stack stack--md">
+            <Link to="/nearby-drivers" className="btn btn--ghost btn--block">
+              Karte: Nächster Fahrer
+            </Link>
             <Link to="/driver-menu" className="btn btn--block">
               Fahrer
             </Link>

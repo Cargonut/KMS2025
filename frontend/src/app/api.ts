@@ -29,6 +29,20 @@ export type Vehicle = {
   image_urls?: string[];
 };
 
+
+
+export type NearbyDriver = {
+  trip_id: number;
+  driver_id: number;
+  latitude: number;
+  longitude: number;
+  distance_km: number;
+  status?: string | null;
+  updated_at: string;
+  from_location: string;
+  to_location: string;
+};
+
 export type Trip = {
   id: number;
   type: TripType;
@@ -810,4 +824,48 @@ export async function completeBooking(bookingId: number | string, token: string)
     token,
   );
   return result.completeBooking;
+}
+
+
+export type UpdateTripTrackingInput = {
+  trip_id: number;
+  latitude: number;
+  longitude: number;
+  status?: string;
+  speed?: number;
+  heading?: number;
+  accuracy?: number;
+};
+
+export async function updateTripTracking(input: UpdateTripTrackingInput, token: string): Promise<void> {
+  await graphqlRequest<{ updateTripTracking: { id: number } }>(
+    `mutation UpdateTripTracking($input: UpdateTripTrackingInput!) {
+      updateTripTracking(input: $input) {
+        id
+      }
+    }`,
+    { input },
+    token,
+  );
+}
+
+export async function fetchNearbyDrivers(lat: number, lng: number, radiusKm: number): Promise<NearbyDriver[]> {
+  const result = await graphqlRequest<{ nearbyDrivers?: NearbyDriver[] | null }>(
+    `query NearbyDrivers($lat: Float!, $lng: Float!, $radiusKm: Float) {
+      nearbyDrivers(lat: $lat, lng: $lng, radiusKm: $radiusKm) {
+        trip_id
+        driver_id
+        latitude
+        longitude
+        distance_km
+        status
+        updated_at
+        from_location
+        to_location
+      }
+    }`,
+    { lat, lng, radiusKm },
+  );
+
+  return result.nearbyDrivers ?? [];
 }
