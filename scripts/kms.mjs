@@ -20,6 +20,13 @@ function log(message) {
   process.stdout.write(`[kms] ${message}\n`);
 }
 
+function logServiceSummary() {
+  log("App startet. Standard-URLs:");
+  log("Frontend: http://localhost:5173");
+  log("Backend: http://localhost:3000");
+  log("GraphiQL: http://localhost:3000/graphiql");
+}
+
 function createDefaultBackendEnv() {
   return [
     'DATABASE_URL="postgresql://postgres:password@localhost:5432/cargonaut?schema=public"',
@@ -232,6 +239,8 @@ async function runDev() {
     cwd: frontendDir,
     prefix: "[frontend]",
   });
+
+  logServiceSummary();
 
   const children = [backend, frontend];
   let stopping = false;
