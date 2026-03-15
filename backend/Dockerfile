@@ -9,17 +9,17 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# Copy source code WITHOUT dist
+# Copy source code
 COPY . .
 
-# Remove dist if it exists from your host (IMPORTANT FIX)
+# Remove dist if it exists from your host
 RUN rm -rf dist
+
+# Generate Prisma client BEFORE build
+RUN npx prisma generate
 
 # Build fresh
 RUN npm run build
-
-# Generate Prisma client AFTER build
-RUN npx prisma generate
 
 # Entrypoint
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh

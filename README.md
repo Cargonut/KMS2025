@@ -1,3 +1,9 @@
+# Cargonaut
+
+Cargonaut ist eine Plattform zur Organisation von Transportfahrten und Mitfahrgelegenheiten.
+
+Das Projekt wurde im Rahmen des Moduls **KMS** entwickelt und besteht aus einem **Frontend (React + Vite)** und einem **Backend (NestJS + GraphQL + Prisma)** mit **PostgreSQL** als Datenbank.
+
 # KMS2025
 
 Zentraler Einstieg fuer Frontend und Backend.
