@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+
+  cargonaut_db:
+    image: postgres:16
+    container_name: cargonaut_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cargonaut
+    ports:
+      - "5432:5432"
+    volumes:
+      - cargonaut_db_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    container_name: cargonaut_backend
+    depends_on:
+      - cargonaut_db
+    env_file:
+      - ./backend/.env.docker
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  frontend:
+    image: node:20-slim
+    container_name: cargonaut_frontend
+    working_dir: /app
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+
+volumes:
+  cargonaut_db_data:
