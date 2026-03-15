@@ -381,7 +381,7 @@ export default function SignupForm({ onSubmit, busy, message }: SignupFormProps)
               <button
                 type="button"
                 className="btn btn--ghost"
-                onClick={clearSelectedFile}
+                onClick={() => clearSelectedFile()}
                 disabled={uploading}
               >
                 Bild verwerfen

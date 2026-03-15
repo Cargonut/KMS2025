@@ -1,0 +1,11 @@
+{
+  "name": "kms2025",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/kms.mjs dev",
+    "setup": "node scripts/kms.mjs setup",
+    "backend": "node scripts/kms.mjs backend",
+    "frontend": "node scripts/kms.mjs frontend",
+    "db:down": "node scripts/kms.mjs db:down"
+  }
+}

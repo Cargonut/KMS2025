@@ -151,12 +151,18 @@ export default function TripPublicationPage() {
       }
       const normalizedPrice = priceInput.replace(",", ".").trim();
       const price = normalizedPrice ? Number(normalizedPrice) : undefined;
-      if (normalizedPrice && (Number.isNaN(price) || price < 0)) {
+      if (
+        normalizedPrice &&
+        (price === undefined || Number.isNaN(price) || price < 0)
+      ) {
         throw new Error("Bitte einen gültigen Preis angeben.");
       }
       const normalizedSeats = seatsInput.trim();
       const seats = normalizedSeats ? Number(normalizedSeats) : undefined;
-      if (normalizedSeats && (!Number.isFinite(seats) || seats <= 0)) {
+      if (
+        normalizedSeats &&
+        (seats === undefined || !Number.isFinite(seats) || seats <= 0)
+      ) {
         throw new Error("Bitte gültige Sitzplätze angeben.");
       }
       const payload: CreateTripInput = {

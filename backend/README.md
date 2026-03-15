@@ -77,6 +77,8 @@ JWT Key erzeugen:
 ```bash
 openssl rand -hex 32
 ```
+
+Beim Root-Setup wird `JWT_SECRET` automatisch generiert, falls er leer ist oder noch auf dem Platzhalter steht.
 ---
 🐘 3. Datenbank starten
 ```bash
